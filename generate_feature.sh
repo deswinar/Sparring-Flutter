@@ -25,6 +25,7 @@ mkdir -p $BASE_PATH/presentation/widgets
 touch $BASE_PATH/data/datasources/${FEATURE_NAME}_remote_data_source.dart
 touch $BASE_PATH/data/datasources/${FEATURE_NAME}_local_data_source.dart
 touch $BASE_PATH/data/models/${FEATURE_NAME}_model.dart
+touch $BASE_PATH/data/repositories/${FEATURE_NAME}_repository_impl.dart
 touch $BASE_PATH/domain/entities/${FEATURE_NAME}_entity.dart
 touch $BASE_PATH/domain/repositories/${FEATURE_NAME}_repository.dart
 touch $BASE_PATH/domain/usecases/get_${FEATURE_NAME}_usecase.dart
