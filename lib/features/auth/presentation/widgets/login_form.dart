@@ -1,5 +1,7 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../router/app_router.dart';
 import '../cubit/auth_cubit.dart';
 
 class LoginForm extends StatefulWidget {
@@ -44,9 +46,19 @@ class _LoginFormState extends State<LoginForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Email field with icon
               TextFormField(
                 controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  prefixIcon: const Icon(Icons.email),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).primaryColor.withOpacity(0.5),
+                    ),
+                  ),
+                ),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -59,9 +71,20 @@ class _LoginFormState extends State<LoginForm> {
                 },
               ),
               const SizedBox(height: 16),
+
+              // Password field with icon
               TextFormField(
                 controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  prefixIcon: const Icon(Icons.lock),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).primaryColor.withOpacity(0.5),
+                    ),
+                  ),
+                ),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -74,12 +97,54 @@ class _LoginFormState extends State<LoginForm> {
                 },
               ),
               const SizedBox(height: 24),
+
+              // Login button with a gradient effect
               state is AuthLoading
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton(
                       onPressed: _onLoginPressed,
-                      child: const Text('Login'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context)
+                            .primaryColor, // Default background color
+                        foregroundColor: Theme.of(context)
+                            .secondaryHeaderColor, // Text color
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 16), // Padding inside the button
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(12.0), // Rounded corners
+                        ),
+                        elevation: 4, // Button shadow (depth)
+                        textStyle: const TextStyle(
+                          fontSize: 16,
+                          fontWeight:
+                              FontWeight.bold, // Bold text for prominence
+                        ),
+                        overlayColor: Theme.of(context)
+                            .primaryColor
+                            .withOpacity(0.2), // Change color on press
+                      ),
+                      child: const Text(
+                        'Login',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
                     ),
+              const SizedBox(height: 16),
+
+              // Option to register
+              TextButton(
+                onPressed: () {
+                  // Navigate to registration page
+                  context.pushRoute(const RegisterRoute());
+                },
+                child: Text(
+                  'Don\'t have an account? Register here.',
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+              ),
             ],
           ),
         );

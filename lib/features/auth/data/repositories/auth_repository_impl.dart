@@ -4,7 +4,7 @@ import '../../domain/entities/user.dart';
 import '../../../../core/errors/failure.dart';
 import '../datasources/auth_remote_datasource.dart';
 import '../models/user_model.dart';
-import '../../../../core/utils/error_handler.dart';  // Import the error handler
+import '../../../../core/utils/error_handler.dart'; // Import the error handler
 
 /// Implementation of the AuthRepository interface
 class AuthRepositoryImpl implements AuthRepository {

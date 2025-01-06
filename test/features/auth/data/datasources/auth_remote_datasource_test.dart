@@ -22,23 +22,43 @@ void main() {
 
       test('should return a UserModel when login is successful', () async {
         // Arrange
-        final user = const UserModel(id: "1", name: "Test User", email: email);
-        // Ensure the when() call returns the correct Future
-        when(mockAuthRemoteDataSource.login(email, password))
-            .thenAnswer((_) async => Right(user));
+        const user = UserModel(
+          id: 1,
+          name: 'Test User',
+          email: email,
+          username: 'testuser',
+          phone: '123456789',
+          website: 'test.com',
+          address: AddressModel(
+            street: '123 Main St',
+            suite: 'Apt 101',
+            city: 'Test City',
+            zipcode: '12345',
+            geo: GeoModel(
+              lat: '37.7749',
+              lng: '-122.4194',
+            ),
+          ),
+          company: CompanyModel(
+            name: 'Test Company',
+            catchPhrase: 'Innovate Always',
+            bs: 'Synergizing the future',
+          ),
+        );
+
+        print(await mockAuthRemoteDataSource.login(email, password));
 
         // Act
         final result = await mockAuthRemoteDataSource.login(email, password);
-
+        print(result);
         // Assert
-        expect(result, equals(Right(user)));
+        expect(result, equals(const Right(user)));
         verify(mockAuthRemoteDataSource.login(email, password));
         verifyNoMoreInteractions(mockAuthRemoteDataSource);
       });
 
       test('should return a failure when login fails', () async {
         // Arrange
-        // Ensure the when() call returns the correct Future
         when(mockAuthRemoteDataSource.login(email, password))
             .thenAnswer((_) async => Left(AuthFailure("Invalid credentials")));
 
@@ -59,8 +79,17 @@ void main() {
 
       test('should return a UserModel when register is successful', () async {
         // Arrange
-        final user = const UserModel(id: "1", name: name, email: email);
-        // Ensure the when() call returns the correct Future
+        const user = const UserModel(
+          id: 2,
+          name: name,
+          email: email,
+          username: 'newuser',
+          phone: '987654321',
+          website: 'example.com',
+          address: null, // Update with AddressModel if necessary
+          company: null, // Update with CompanyModel if necessary
+        );
+
         when(mockAuthRemoteDataSource.register(
                 email: email, name: name, password: password))
             .thenAnswer((_) async => Right(user));
@@ -78,7 +107,6 @@ void main() {
 
       test('should return a failure when register fails', () async {
         // Arrange
-        // Ensure the when() call returns the correct Future
         when(mockAuthRemoteDataSource.register(
                 email: email, name: name, password: password))
             .thenAnswer((_) async => Left(ApiFailure("API error occurred")));

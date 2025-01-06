@@ -14,6 +14,7 @@ BASE_PATH="lib/features/$FEATURE_NAME"
 # Create the folder structure
 mkdir -p $BASE_PATH/data/datasources
 mkdir -p $BASE_PATH/data/models
+mkdir -p $BASE_PATH/data/repositories
 mkdir -p $BASE_PATH/domain/entities
 mkdir -p $BASE_PATH/domain/repositories
 mkdir -p $BASE_PATH/domain/usecases
@@ -24,6 +25,8 @@ mkdir -p $BASE_PATH/presentation/widgets
 # Create files with the feature name
 touch $BASE_PATH/data/datasources/${FEATURE_NAME}_remote_data_source.dart
 touch $BASE_PATH/data/datasources/${FEATURE_NAME}_local_data_source.dart
+touch $BASE_PATH/data/datasources/${FEATURE_NAME}_remote_data_source_impl.dart
+touch $BASE_PATH/data/datasources/${FEATURE_NAME}_local_data_source_impl.dart
 touch $BASE_PATH/data/models/${FEATURE_NAME}_model.dart
 touch $BASE_PATH/data/repositories/${FEATURE_NAME}_repository_impl.dart
 touch $BASE_PATH/domain/entities/${FEATURE_NAME}_entity.dart

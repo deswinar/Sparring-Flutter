@@ -1,51 +1,70 @@
+import 'dart:convert';
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+
+import '../../../../core/errors/failure.dart';
+import '../../../../core/errors/exceptions.dart';
 import '../models/user_model.dart';
 import 'auth_remote_datasource.dart';
-import '../../../../core/errors/failure.dart'; // Import Failure class
+import '../../../../core/network/api_client.dart';
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
+  final ApiClient apiClient;
+
+  AuthRemoteDataSourceImpl(this.apiClient);
+
   @override
   Future<Either<Failure, UserModel>> login(
       String email, String password) async {
     try {
-      // Simulate network delay
-      await Future.delayed(const Duration(seconds: 2));
+      // final response = await apiClient.post('/users/1', {
+      //   'email': email,
+      //   'password': password,
+      // });
+      final response = await apiClient.get('/users/1');
 
-      // Simulate successful login with mock data
-      if (email == "test@example.com" && password == "password123") {
-        // Return success with user data (Right side of Either)
-        return const Right(
-            UserModel(id: "1", name: "Test User", email: "test@example.com"));
-      } else {
-        // Return specific failure (Left side of Either)
-        throw AuthFailure(
-            "Invalid credentials"); // Using AuthFailure to specify auth-related error
+      final data = response.data; // Dio automatically parses JSON
+      final userJson = data;
+      // userJson['access_token'] = data['access_token'];
+      // userJson['refresh_token'] = data['refresh_token'];
+
+      final user = UserModel.fromJson(userJson);
+      return Right(user);
+    } on DioException catch (e) {
+      if (e.response != null) {
+        throw ApiException(
+            'Login failed: ${e.response?.data['message'] ?? e.message}');
       }
-    } on AuthFailure {
-      // Return specific failure (Left side of Either)
-      rethrow;
+      return Left(ApiFailure(e.message.toString()));
     } catch (e) {
-      // Return failure (Left side of Either) in case of any exception
-      throw NetworkFailure(
-          "Network error occurred"); // Using NetworkFailure for network-related errors
+      return Left(ApiFailure(e.toString()));
     }
   }
 
   @override
-  Future<Either<Failure, UserModel>> register(
-      {required String email,
-      required String name,
-      required String password}) async {
+  Future<Either<Failure, UserModel>> register({
+    required String email,
+    required String name,
+    required String password,
+  }) async {
     try {
-      // Simulate network delay
-      await Future.delayed(const Duration(seconds: 2));
+      final response = await apiClient.post('/register', {
+        'email': email,
+        'name': name,
+        'password': password,
+      });
 
-      // Simulate successful registration with mock data
-      return Right(UserModel(id: "1", name: name, email: email)); // Success
+      final data = response.data; // Dio automatically parses JSON
+      final user = UserModel.fromJson(data['user']);
+      return Right(user);
+    } on DioException catch (e) {
+      if (e.response != null) {
+        throw ApiException(
+            'Registration failed: ${e.response?.data['message'] ?? e.message}');
+      }
+      return Left(ApiFailure(e.message.toString()));
     } catch (e) {
-      // Return failure (Left side of Either) in case of any exception
-      return throw ApiFailure(
-          "API error occurred"); // Using ApiFailure for API-related errors
+      return Left(ApiFailure(e.toString()));
     }
   }
 }
