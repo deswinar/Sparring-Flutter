@@ -38,11 +38,6 @@ void main() {
               lng: '-122.4194',
             ),
           ),
-          company: CompanyModel(
-            name: 'Test Company',
-            catchPhrase: 'Innovate Always',
-            bs: 'Synergizing the future',
-          ),
         );
 
         print(await mockAuthRemoteDataSource.login(email, password));
@@ -85,7 +80,6 @@ void main() {
           phone: '987654321',
           website: 'example.com',
           address: null, // Update with AddressModel if necessary
-          company: null, // Update with CompanyModel if necessary
         );
 
         when(mockAuthRemoteDataSource.register(

@@ -1,70 +1,86 @@
-import 'dart:convert';
 import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
-
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../core/errors/failure.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../models/user_model.dart';
+import '../../domain/entities/user.dart';
 import 'auth_remote_data_source.dart';
-import '../../../../core/network/api_client.dart';
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final ApiClient apiClient;
+  final firebase_auth.FirebaseAuth firebaseAuth;
+  final FirebaseFirestore firestore;
 
-  AuthRemoteDataSourceImpl(this.apiClient);
+  AuthRemoteDataSourceImpl(this.firebaseAuth, this.firestore);
 
   @override
-  Future<Either<Failure, UserModel>> login(
-      String email, String password) async {
+  Future<Either<Failure, UserModel>> login(String email, String password) async {
     try {
-      final response = await apiClient.post('/login', {
-        'email': email,
-        'password': password,
-      });
-      // final response = await apiClient.get('/users/1');
+      // Use Firebase Authentication to sign in the user
+      final userCredential = await firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-      final data = response.data; // Dio automatically parses JSON
-      final userJson = data;
-      // userJson['access_token'] = data['access_token'];
-      // userJson['refresh_token'] = data['refresh_token'];
-
-      final user = UserModel.fromJson(userJson);
-      return Right(user);
-    } on DioException catch (e) {
-      if (e.response != null) {
-        throw ApiException(
-            'Login failed: ${e.response?.data['message'] ?? e.message}');
+      final user = userCredential.user;
+      if (user != null) {
+        // Fetch user additional data from Firestore
+        final userDoc = await firestore.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+          final userModel = UserModel.fromJson(userDoc.data()!);
+          return Right(userModel);
+        } else {
+          return Left(AuthFailure('User data not found.'));
+        }
+      } else {
+        return Left(AuthFailure('User not found.'));
       }
-      return Left(ApiFailure(e.message.toString()));
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      return Left(AuthFailure('Login failed: ${e.message ?? e.code}'));
     } catch (e) {
-      return Left(ApiFailure(e.toString()));
+      return Left(AuthFailure('An unexpected error occurred: $e'));
     }
   }
 
   @override
   Future<Either<Failure, UserModel>> register({
     required String email,
-    required String username,
+    required String name,
     required String password,
   }) async {
     try {
-      final response = await apiClient.post('/register', {
-        'email': email,
-        'name': username,
-        'password': password,
-      });
+      // Use Firebase Authentication to register the user
+      final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-      final data = response.data; // Dio automatically parses JSON
-      final user = UserModel.fromJson(data['user']);
-      return Right(user);
-    } on DioException catch (e) {
-      if (e.response != null) {
-        throw ApiException(
-            'Registration failed: ${e.response?.data['message'] ?? e.message}');
+      final user = userCredential.user;
+      if (user != null) {
+        // Optionally, update the user's display name
+        await user.updateDisplayName(name);
+
+        // Create a UserModel to store in Firestore with required fields
+        final userModel = UserModel(
+          id: int.parse(user.uid), // Assuming the id comes from Firebase UID
+          name: name,
+          email: email,
+          phone: "", // Set as empty initially
+          website: "", // Set as empty initially
+        );
+
+        // Save user data to Firestore
+        await firestore.collection('users').doc(user.uid).set(userModel.toJson());
+
+        // Return the created user as an entity
+        return Right(userModel);
+      } else {  
+        return Left(AuthFailure('User creation failed.'));
       }
-      return Left(ApiFailure(e.message.toString()));
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      return Left(AuthFailure('Registration failed: ${e.message ?? e.code}'));
     } catch (e) {
-      return Left(ApiFailure(e.toString()));
+      return Left(AuthFailure('An unexpected error occurred: $e'));
     }
   }
 }

@@ -1,24 +1,24 @@
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/entities/user.dart';
 import '../../../../core/errors/failure.dart';
-import '../datasources/auth_local_data_source.dart';
 import '../datasources/auth_remote_data_source.dart';
-import '../models/user_model.dart';
 import '../../../../core/utils/error_handler.dart'; // Import the error handler
 
 /// Implementation of the AuthRepository interface
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthLocalDataSource localDataSource;
+  // final AuthLocalDataSource localDataSource;
+  final AuthRemoteDataSource remoteDataSource;
 
-  AuthRepositoryImpl({required this.localDataSource});
+  AuthRepositoryImpl({required this.remoteDataSource});
 
   @override
   Future<Either<Failure, User>> login(String email, String password) async {
     // Use handleErrors to centralize error handling
     return handleErrors(() async {
       // Call the remote data source to perform login
-      final result = await localDataSource.login(email, password);
+      final result = await remoteDataSource.login(email, password);
 
       // Map the result to a domain entity (User)
       return result.fold(
@@ -32,18 +32,18 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, User>> register({
     required String email,
     required String password,
-    required String username,
+    required String name,
   }) async {
     // Use handleErrors to centralize error handling
     return handleErrors(() async {
       // Call the remote data source to perform registration
-      final result = await localDataSource.register(
+      final result = await remoteDataSource.register(
         email: email,
         password: password,
-        username: username,
+        name: name,
       );
 
-      print(result);
+      if(kDebugMode) print(result);
 
       // Map the result to a domain entity (User)
       return result.fold(

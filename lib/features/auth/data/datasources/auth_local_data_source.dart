@@ -11,6 +11,6 @@ abstract class AuthLocalDataSource {
   Future<Either<Failure, UserModel>> register({
     required String email,
     required String password,
-    required String username,
+    required String name,
   });
 }

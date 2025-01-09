@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/errors/failure.dart';
+import '../../domain/entities/user.dart';
 import '../models/user_model.dart';
 
 /// Abstract class for remote data source related to authentication
@@ -11,6 +12,6 @@ abstract class AuthRemoteDataSource {
   Future<Either<Failure, UserModel>> register({
     required String email,
     required String password,
-    required String username,
+    required String name,
   });
 }

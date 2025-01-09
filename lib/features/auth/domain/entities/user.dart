@@ -1,30 +1,30 @@
+// lib/features/auth/domain/entities/user.dart
+
 import 'package:equatable/equatable.dart';
 
 /// Core business entity representing a User.
 class User extends Equatable {
   final int id; // Unique identifier for the user
   final String name; // User's full name
-  final String username;
   final String email; // User's email address
-  final String phone; // User's phone number
-  final String website; // User's website
+  final String? photoUrl;
+  final String? phone; // User's phone number
+  final String? website; // User's website
   final Address? address; // User's address
-  final Company? company; // User's company details
 
   const User({
     required this.id,
     required this.name,
-    required this.username,
     required this.email,
-    required this.phone,
-    required this.website,
+    this.photoUrl,
+    this.phone,
+    this.website,
     this.address,
-    this.company,
   });
 
   @override
   List<Object?> get props =>
-      [id, name, username, email, phone, website, address, company];
+      [id, name, email, photoUrl, phone, website, address];
 }
 
 /// Represents a User's Address
@@ -56,20 +56,4 @@ class Geo extends Equatable {
 
   @override
   List<Object?> get props => [lat, lng];
-}
-
-/// Represents a User's Company
-class Company extends Equatable {
-  final String name;
-  final String catchPhrase;
-  final String bs;
-
-  const Company({
-    required this.name,
-    required this.catchPhrase,
-    required this.bs,
-  });
-
-  @override
-  List<Object?> get props => [name, catchPhrase, bs];
 }

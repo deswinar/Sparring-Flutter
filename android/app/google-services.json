@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "607995216337",
+    "project_id": "sparring-2721f",
+    "storage_bucket": "sparring-2721f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:607995216337:android:ee4c53c1d83cbb1a5520f0",
+        "android_client_info": {
+          "package_name": "com.arraya.sparring"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-BvQYE-QVOvUxJcn_qt_RrYdWk3U22qk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

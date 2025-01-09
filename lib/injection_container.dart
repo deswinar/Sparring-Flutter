@@ -1,9 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sparring/core/network/api_client.dart';
+import 'core/network/cloudinary_service.dart';
 import 'core/theme/cubit/theme_cubit.dart';
-import 'core/utils/constants.dart';
 import 'features/auth/data/datasources/auth_local_data_source.dart';
 import 'features/auth/data/datasources/auth_local_data_source_impl.dart';
 import 'features/auth/data/datasources/auth_remote_data_source.dart';
@@ -14,37 +14,38 @@ import 'features/auth/domain/usecases/login_usecase.dart';
 import 'features/auth/domain/usecases/register_usecase.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 
-final getIt = GetIt.instance;
+final sl = GetIt.instance;
 
 Future<void> setup() async {
   // Initialize SharedPreferences asynchronously
   final sharedPreferences = await SharedPreferences.getInstance();
+  // Register CloudinaryService as a singleton
+  sl.registerLazySingleton(() => CloudinaryService(cloudName: 'djnfz4ehq'));
+
+  // Register Firebase instances
+  sl.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
+  sl.registerLazySingleton<FirebaseFirestore>(() => FirebaseFirestore.instance);
 
   // Register SharedPreferences instance in GetIt
-  getIt.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
+  sl.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
 
-  // Register other services and dependencies
-  getIt.registerLazySingleton(
-      () => ApiClient(baseUrl)); // baseUrl from constants
-  getIt.registerLazySingleton(() => http.Client());
-
-  getIt.registerLazySingleton<AuthRemoteDataSource>(
-    () => AuthRemoteDataSourceImpl(getIt()),
+  sl.registerLazySingleton<AuthRemoteDataSource>(
+    () => AuthRemoteDataSourceImpl(sl(), sl()),
   );
 
-  getIt.registerLazySingleton<AuthLocalDataSource>(
+  sl.registerLazySingleton<AuthLocalDataSource>(
     () => AuthLocalDataSourceImpl(),
   );
 
-  getIt.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImpl(localDataSource: getIt()),
+  sl.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(remoteDataSource: sl()),
   );
 
-  getIt.registerLazySingleton(() => LoginUseCase(getIt()));
-  getIt.registerLazySingleton(() => RegisterUseCase(getIt()));
+  sl.registerLazySingleton(() => LoginUseCase(sl()));
+  sl.registerLazySingleton(() => RegisterUseCase(sl()));
 
-  getIt.registerFactory<ThemeCubit>(() => ThemeCubit());
-  getIt.registerFactory<AuthCubit>(
-    () => AuthCubit(loginUseCase: getIt(), registerUseCase: getIt()),
+  sl.registerFactory<ThemeCubit>(() => ThemeCubit());
+  sl.registerFactory<AuthCubit>(
+    () => AuthCubit(loginUseCase: sl(), registerUseCase: sl()),
   );
 }

@@ -14,23 +14,23 @@ class RegisterUseCase {
     return repository.register(
       email: params.email,
       password: params.password,
-      username: params.username,
+      name: params.name,
     );
   }
 }
 
 /// Parameters required for registration
 class RegisterParams extends Equatable {
-  final String username;
+  final String name;
   final String email;
   final String password;
 
   const RegisterParams({
-    required this.username,
+    required this.name,
     required this.email,
     required this.password,
   });
 
   @override
-  List<Object> get props => [username, email, password];
+  List<Object> get props => [name, email, password];
 }

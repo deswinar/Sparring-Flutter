@@ -1,38 +1,29 @@
+// lib/features/auth/data/models/user_model.dart
+
 import '../../domain/entities/user.dart';
 
 /// Model class for User to handle data between API and domain
 class UserModel extends User {
   const UserModel({
-    required int id,
-    required String name,
-    required String username,
-    required String email,
-    required String phone,
-    required String website,
-    AddressModel? address,
-    CompanyModel? company,
-  }) : super(
-          id: id,
-          name: name,
-          username: username,
-          email: email,
-          phone: phone,
-          website: website,
-          address: address,
-          company: company,
-        );
+    required super.id,
+    required super.name,
+    required super.email,
+    super.photoUrl,
+    super.phone,
+    super.website,
+    super.address,
+  });
 
   /// Factory constructor to create a UserModel from a JSON response
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json['id'],
       name: json['name'],
-      username: json['username'],
       email: json['email'],
+      photoUrl: json['photoUrl'],
       phone: json['phone'],
       website: json['website'],
       address: AddressModel.fromJson(json['address']),
-      company: CompanyModel.fromJson(json['company']),
     );
   }
 
@@ -41,26 +32,24 @@ class UserModel extends User {
     return {
       'id': id,
       'name': name,
-      'username': username,
       'email': email,
+      'photoUrl': photoUrl,
       'phone': phone,
       'website': website,
       'address': (address as AddressModel).toJson(),
-      'company': (company as CompanyModel).toJson(),
     };
   }
 
-  // Convert UserModel to a domain entity (User)
+  /// Convert UserModel to a domain entity (User)
   User toEntity() {
     return User(
       id: id,
       name: name,
-      username: username,
       email: email,
+      photoUrl: photoUrl,
       phone: phone,
       website: website,
-      address: address,
-      company: company,
+      address: (address as AddressModel?)?.toEntity(),
     );
   }
 }
@@ -94,6 +83,17 @@ class AddressModel extends Address {
       'geo': (geo as GeoModel).toJson(),
     };
   }
+
+  /// Convert AddressModel to a domain entity (Address)
+  Address toEntity() {
+    return Address(
+      street: street,
+      suite: suite,
+      city: city,
+      zipcode: zipcode,
+      geo: (geo as GeoModel).toEntity(),
+    );
+  }
 }
 
 /// Geo model class
@@ -113,29 +113,12 @@ class GeoModel extends Geo {
       'lng': lng,
     };
   }
-}
 
-/// Company model class
-class CompanyModel extends Company {
-  const CompanyModel({
-    required super.name,
-    required super.catchPhrase,
-    required super.bs,
-  });
-
-  factory CompanyModel.fromJson(Map<String, dynamic> json) {
-    return CompanyModel(
-      name: json['name'],
-      catchPhrase: json['catchPhrase'],
-      bs: json['bs'],
+  /// Convert GeoModel to a domain entity (Geo)
+  Geo toEntity() {
+    return Geo(
+      lat: lat,
+      lng: lng,
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'catchPhrase': catchPhrase,
-      'bs': bs,
-    };
   }
 }

@@ -1,15 +1,15 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:sparring/core/errors/failure.dart';
 import 'package:sparring/features/auth/data/datasources/auth_remote_data_source_impl.dart';
 import 'package:sparring/features/auth/data/models/user_model.dart';
-import 'package:sparring/injection_container.dart';
 
 void main() {
   late AuthRemoteDataSourceImpl dataSource;
 
   setUp(() {
-    dataSource = AuthRemoteDataSourceImpl(getIt());
+    dataSource = AuthRemoteDataSourceImpl(GetIt.instance(), GetIt.instance());
   });
 
   group('AuthRemoteDataSourceImpl - login', () {
@@ -51,7 +51,7 @@ void main() {
 
     test('should throw NetworkFailure for network error', () async {
       // Simulate network failure by overriding the implementation.
-      final dataSourceWithError = AuthRemoteDataSourceImplWithError(getIt());
+      final dataSourceWithError = AuthRemoteDataSourceImplWithError(GetIt.instance(), GetIt.instance());
 
       // Act
       try {
@@ -92,7 +92,7 @@ void main() {
 
 // Simulated class to mimic network failure for testing
 class AuthRemoteDataSourceImplWithError extends AuthRemoteDataSourceImpl {
-  AuthRemoteDataSourceImplWithError(super.apiClient);
+  AuthRemoteDataSourceImplWithError(super.firebaseAuth, super.firestore);
 
   @override
   Future<Either<Failure, UserModel>> login(

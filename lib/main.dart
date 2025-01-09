@@ -1,16 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart'; // Import ScreenUtil
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sparring/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:sparring/injection_container.dart';
 import 'package:sparring/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/cubit/theme_cubit.dart';
 import 'core/theme/cubit/theme_state.dart';
-import 'home_screen.dart';
 import 'package:path_provider/path_provider.dart';
 
 void main() async {
@@ -39,10 +38,10 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => getIt<ThemeCubit>(),
+          create: (_) => GetIt.instance<ThemeCubit>(),
         ),
         BlocProvider(
-          create: (_) => getIt<AuthCubit>(),
+          create: (_) => GetIt.instance<AuthCubit>(),
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(

@@ -18,7 +18,6 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
       final storedEmail = _sharedPreferences.getString('email');
       final storedPassword = _sharedPreferences.getString('password');
       final storedName = _sharedPreferences.getString('name');
-      final storedUsername = _sharedPreferences.getString('username');
 
       if (storedEmail == null || storedPassword == null) {
         return Left(ApiFailure('No user data found'));
@@ -32,7 +31,6 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
       final user = UserModel(
         id: 0, // You can set a default or mock ID for now
         name: storedName!,
-        username: storedUsername!,
         email: storedEmail,
         phone: '', // Empty or mock phone as needed
         website: '', // Empty or mock website as needed
@@ -47,20 +45,19 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   @override
   Future<Either<Failure, UserModel>> register({
     required String email,
-    required String username,
+    required String name,
     required String password,
   }) async {
     try {
       // Mimic registration logic
       await _sharedPreferences.setString('email', email);
-      await _sharedPreferences.setString('name', username);
+      await _sharedPreferences.setString('name', name);
       await _sharedPreferences.setString('password', password);
 
       // Returning a UserModel mock with the saved details (you can customize the ID)
       final user = UserModel(
         id: 0, // You can set a default or mock ID for now
-        name: username,
-        username: username,
+        name: name,
         email: email,
         phone: '', // Empty or mock phone as needed
         website: '', // Empty or mock website as needed
