@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:sparring/core/errors/failure.dart';
-import 'package:sparring/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:sparring/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:sparring/features/auth/data/models/user_model.dart';
 
 // Create a Mock class for AuthRemoteDataSource
@@ -26,7 +26,6 @@ void main() {
           id: 1,
           name: 'Test User',
           email: email,
-          username: 'testuser',
           phone: '123456789',
           website: 'test.com',
           address: AddressModel(
@@ -79,11 +78,10 @@ void main() {
 
       test('should return a UserModel when register is successful', () async {
         // Arrange
-        const user = const UserModel(
+        const user = UserModel(
           id: 2,
           name: name,
           email: email,
-          username: 'newuser',
           phone: '987654321',
           website: 'example.com',
           address: null, // Update with AddressModel if necessary

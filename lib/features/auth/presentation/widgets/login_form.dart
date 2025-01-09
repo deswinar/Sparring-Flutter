@@ -37,6 +37,7 @@ class _LoginFormState extends State<LoginForm> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Login successful!')),
           );
+          context.replaceRoute(const MainDashboardRoute());
           // Navigate to the next page or dashboard
         }
       },
@@ -60,15 +61,6 @@ class _LoginFormState extends State<LoginForm> {
                   ),
                 ),
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                    return 'Please enter a valid email address';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 16),
 
@@ -86,15 +78,6 @@ class _LoginFormState extends State<LoginForm> {
                   ),
                 ),
                 obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  if (value.length < 6) {
-                    return 'Password must be at least 6 characters';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 24),
 
@@ -140,6 +123,20 @@ class _LoginFormState extends State<LoginForm> {
                 },
                 child: Text(
                   'Don\'t have an account? Register here.',
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+              ),
+
+              // Forgot password option
+              TextButton(
+                onPressed: () {
+                  // Navigate to Forgot Password page
+                  // context.pushRoute(const ForgotPasswordRoute());
+                },
+                child: Text(
+                  'Forgot password?',
                   style: TextStyle(
                     color: Theme.of(context).primaryColor,
                   ),

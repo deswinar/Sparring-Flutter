@@ -11,6 +11,6 @@ abstract class AuthRemoteDataSource {
   Future<Either<Failure, UserModel>> register({
     required String email,
     required String password,
-    required String name,
+    required String username,
   });
 }

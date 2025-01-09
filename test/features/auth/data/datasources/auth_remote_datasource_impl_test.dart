@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sparring/core/errors/failure.dart';
-import 'package:sparring/features/auth/data/datasources/auth_remote_datasource_impl.dart';
+import 'package:sparring/features/auth/data/datasources/auth_remote_data_source_impl.dart';
 import 'package:sparring/features/auth/data/models/user_model.dart';
 import 'package:sparring/injection_container.dart';
 

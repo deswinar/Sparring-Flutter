@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 class User extends Equatable {
   final int id; // Unique identifier for the user
   final String name; // User's full name
-  final String username; // User's username
+  final String username;
   final String email; // User's email address
   final String phone; // User's phone number
   final String website; // User's website

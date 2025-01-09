@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 import '../../../../core/errors/failure.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../models/user_model.dart';
-import 'auth_remote_datasource.dart';
+import 'auth_remote_data_source.dart';
 import '../../../../core/network/api_client.dart';
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -17,11 +17,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<Either<Failure, UserModel>> login(
       String email, String password) async {
     try {
-      // final response = await apiClient.post('/users/1', {
-      //   'email': email,
-      //   'password': password,
-      // });
-      final response = await apiClient.get('/users/1');
+      final response = await apiClient.post('/login', {
+        'email': email,
+        'password': password,
+      });
+      // final response = await apiClient.get('/users/1');
 
       final data = response.data; // Dio automatically parses JSON
       final userJson = data;
@@ -44,13 +44,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<Either<Failure, UserModel>> register({
     required String email,
-    required String name,
+    required String username,
     required String password,
   }) async {
     try {
       final response = await apiClient.post('/register', {
         'email': email,
-        'name': name,
+        'name': username,
         'password': password,
       });
 

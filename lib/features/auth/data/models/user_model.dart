@@ -68,17 +68,12 @@ class UserModel extends User {
 /// Address model class
 class AddressModel extends Address {
   const AddressModel({
-    required String street,
-    required String suite,
-    required String city,
-    required String zipcode,
-    required GeoModel geo,
-  }) : super(
-            street: street,
-            suite: suite,
-            city: city,
-            zipcode: zipcode,
-            geo: geo);
+    required super.street,
+    required super.suite,
+    required super.city,
+    required super.zipcode,
+    required GeoModel super.geo,
+  });
 
   factory AddressModel.fromJson(Map<String, dynamic> json) {
     return AddressModel(
@@ -103,8 +98,7 @@ class AddressModel extends Address {
 
 /// Geo model class
 class GeoModel extends Geo {
-  const GeoModel({required String lat, required String lng})
-      : super(lat: lat, lng: lng);
+  const GeoModel({required super.lat, required super.lng});
 
   factory GeoModel.fromJson(Map<String, dynamic> json) {
     return GeoModel(
@@ -124,10 +118,10 @@ class GeoModel extends Geo {
 /// Company model class
 class CompanyModel extends Company {
   const CompanyModel({
-    required String name,
-    required String catchPhrase,
-    required String bs,
-  }) : super(name: name, catchPhrase: catchPhrase, bs: bs);
+    required super.name,
+    required super.catchPhrase,
+    required super.bs,
+  });
 
   factory CompanyModel.fromJson(Map<String, dynamic> json) {
     return CompanyModel(

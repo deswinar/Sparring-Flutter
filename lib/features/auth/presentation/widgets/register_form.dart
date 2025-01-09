@@ -54,7 +54,7 @@ class _RegisterFormState extends State<RegisterForm> {
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(
-                  labelText: 'Name',
+                  labelText: 'Username',
                   prefixIcon: const Icon(Icons.person),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
@@ -65,7 +65,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your name';
+                    return 'Please enter your username';
                   }
                   return null;
                 },

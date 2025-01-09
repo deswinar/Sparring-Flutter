@@ -14,7 +14,7 @@ class AppTheme {
       bottomAppBarSchemeColor: SchemeColor.primary,
     ),
     textTheme: TextTheme(
-      bodySmall: TextStyle(fontSize: 14.sp),
+      bodySmall: TextStyle(fontSize: 10.sp),
       titleSmall: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.normal),
       titleMedium: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.normal),
       titleLarge: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.normal),
@@ -30,9 +30,10 @@ class AppTheme {
     appBarStyle: FlexAppBarStyle.primary,
     tabBarStyle: FlexTabBarStyle.forAppBar,
     swapColors: true,
-    subThemesData: const FlexSubThemesData(bottomAppBarSchemeColor: SchemeColor.primary),
+    subThemesData:
+        const FlexSubThemesData(bottomAppBarSchemeColor: SchemeColor.primary),
     textTheme: TextTheme(
-      bodySmall: TextStyle(fontSize: 14.sp),
+      bodySmall: TextStyle(fontSize: 10.sp),
       titleSmall: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.normal),
       titleMedium: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.normal),
       titleLarge: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.normal),

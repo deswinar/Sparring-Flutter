@@ -27,10 +27,10 @@ class AuthCubit extends Cubit<AuthState> {
 
   // Suggested code may be subject to a license. Learn more: ~LicenseLog:4109811883.
   /// Perform register
-  Future<void> register(String name, String email, String password) async {
+  Future<void> register(String username, String email, String password) async {
     emit(AuthLoading());
     final result =
-        await registerUseCase(RegisterParams(name: name, email: email, password: password));
+        await registerUseCase(RegisterParams(username: username, email: email, password: password));
     result.fold(
       (failure) => emit(AuthFailure(_mapFailureToMessage(failure))),
       (user) => emit(AuthSuccess(user)),
