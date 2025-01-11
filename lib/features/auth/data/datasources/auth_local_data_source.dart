@@ -1,16 +1,24 @@
-import 'package:dartz/dartz.dart';
-import 'package:sparring/core/errors/failure.dart';
-
 import '../models/user_model.dart';
 
 abstract class AuthLocalDataSource {
-  /// Logs in a user with the given email and password
-  Future<Either<Failure, UserModel>> login(String email, String password);
+  /// Cache the authenticated user data locally.
+  Future<void> cacheUserData(UserModel user);
 
-  /// Registers a new user with the provided details
-  Future<Either<Failure, UserModel>> register({
-    required String email,
-    required String password,
-    required String name,
-  });
+  /// Retrieve the cached user data.
+  /// Returns `UserModel` if found or `null` if no user is cached.
+  Future<UserModel?> getCachedUserData();
+
+  /// Clear the cached user data.
+  Future<void> clearCachedUserData();
+
+  /// Cache the authentication token (optional).
+  Future<void> cacheAuthToken(String token);
+
+  /// Retrieve the cached authentication token (optional).
+  /// Returns `String` if found or `null` if no token is cached.
+  Future<String?> getCachedAuthToken();
+
+  /// Clear the cached Auth Token.
+  Future<void> clearCachedAuthToken();
 }
+

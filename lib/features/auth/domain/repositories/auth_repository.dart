@@ -13,4 +13,8 @@ abstract class AuthRepository {
     required String password,
     required String name,
   });
+
+  Future<Either<Failure, void>> logout();
+
+  Future<Either<Failure, User>> checkUserStatus();
 }

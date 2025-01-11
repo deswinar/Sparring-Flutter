@@ -1,11 +1,16 @@
 // theme_state.dart
-import 'package:freezed_annotation/freezed_annotation.dart';
 import '../app_theme.dart';  // Import your AppTheme
 
-part 'theme_state.freezed.dart';
+abstract class ThemeState {
+  const ThemeState();
 
-@freezed
-class ThemeState with _$ThemeState {
-  const factory ThemeState.light() = LightTheme;
-  const factory ThemeState.dark() = DarkTheme;
+  // Optionally add methods to define common behavior if needed
+}
+
+class LightTheme extends ThemeState {
+  const LightTheme();
+}
+
+class DarkTheme extends ThemeState {
+  const DarkTheme();
 }

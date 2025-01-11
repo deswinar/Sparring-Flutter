@@ -3,29 +3,37 @@ import 'package:flutter/foundation.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/entities/user.dart';
 import '../../../../core/errors/failure.dart';
+import '../datasources/auth_local_data_source.dart';
 import '../datasources/auth_remote_data_source.dart';
-import '../../../../core/utils/error_handler.dart'; // Import the error handler
 
 /// Implementation of the AuthRepository interface
 class AuthRepositoryImpl implements AuthRepository {
-  // final AuthLocalDataSource localDataSource;
+  final AuthLocalDataSource localDataSource;
   final AuthRemoteDataSource remoteDataSource;
 
-  AuthRepositoryImpl({required this.remoteDataSource});
+  AuthRepositoryImpl(
+      {required this.localDataSource, required this.remoteDataSource});
 
   @override
   Future<Either<Failure, User>> login(String email, String password) async {
-    // Use handleErrors to centralize error handling
-    return handleErrors(() async {
-      // Call the remote data source to perform login
-      final result = await remoteDataSource.login(email, password);
-
-      // Map the result to a domain entity (User)
-      return result.fold(
-        (failure) => throw failure, // Return the failure as is
-        (userModel) => userModel.toEntity(), // Convert model to entity
-      );
-    });
+    // Check if user data is cached locally before making a network request
+    try {
+      final cachedUser = await localDataSource.getCachedUserData();
+      if (cachedUser != null) {
+        return Right(
+            cachedUser.toEntity()); // Return cached user data if available
+      } else {
+        final result = await remoteDataSource.login(email, password);
+        await localDataSource.cacheUserData(result);
+        final authToken =
+            await remoteDataSource.getAuthToken(); // Get auth token if needed
+        await localDataSource.cacheAuthToken(authToken);
+        return Right(result.toEntity()); // Convert model to entity
+      }
+    } catch (e) {
+      if (kDebugMode) print(e.toString());
+      return Left(e as Failure);
+    }
   }
 
   @override
@@ -34,22 +42,50 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
     required String name,
   }) async {
-    // Use handleErrors to centralize error handling
-    return handleErrors(() async {
-      // Call the remote data source to perform registration
+    try {
       final result = await remoteDataSource.register(
         email: email,
         password: password,
         name: name,
       );
+      // Cache the user data and token after a successful registration
+      await localDataSource.cacheUserData(result);
+      final authToken =
+          await remoteDataSource.getAuthToken(); // Get auth token if needed
+      await localDataSource.cacheAuthToken(authToken);
+      return Right(result.toEntity());
+    } catch (e) {
+      return Left(e as Failure);
+    }
+  }
 
-      if(kDebugMode) print(result);
+  // Add any additional methods to clear cached data, if needed
+  @override
+  Future<Either<Failure, void>> logout() async {
+    try {
+      await remoteDataSource.logout();
+      await localDataSource.clearCachedUserData(); // Clear user data
+      await localDataSource.clearCachedAuthToken(); // Clear auth token
+      return const Right(null);
+    } catch (e) {
+      return Left(e as Failure);
+    }
+  }
 
-      // Map the result to a domain entity (User)
-      return result.fold(
-        (failure) => throw failure, // Return the failure as is
-        (userModel) => userModel.toEntity(), // Convert model to entity
-      );
-    });
+  @override
+  Future<Either<Failure, User>> checkUserStatus() async {
+    try {
+      final cachedUser = await localDataSource.getCachedUserData();
+      final cachedToken = await localDataSource.getCachedAuthToken();
+
+      if (cachedUser != null && cachedToken != null) {
+        return Right(cachedUser); // Return the cached user as a Right value
+      }
+
+      return Left(AuthFailure(
+          'User not authenticated')); // Return failure if user or token is null
+    } catch (e) {
+      return Left(e as Failure);
+    }
   }
 }

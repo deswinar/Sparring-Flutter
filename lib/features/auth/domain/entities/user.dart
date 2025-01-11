@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 
 /// Core business entity representing a User.
 class User extends Equatable {
-  final int id; // Unique identifier for the user
+  final String id; // Unique identifier for the user
   final String name; // User's full name
   final String email; // User's email address
   final String? photoUrl;

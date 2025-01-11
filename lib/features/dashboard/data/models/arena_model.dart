@@ -1,6 +1,5 @@
 // lib/features/dashboard/data/models/arena_model.dart
 
-import 'dart:convert';
 import '../../domain/entities/arena.dart';
 
 class ArenaModel extends Arena {

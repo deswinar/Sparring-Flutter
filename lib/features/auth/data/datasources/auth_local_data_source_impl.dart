@@ -1,71 +1,76 @@
-import 'dart:convert'; // For future use if you decide to handle complex objects
-import 'package:dartz/dartz.dart';
-import 'package:get_it/get_it.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sparring/core/errors/failure.dart';
-import 'package:sparring/core/theme/app_theme.dart';
+// lib/features/auth/data/datasources/auth_local_data_source_impl.dart
+
+import 'package:flutter/foundation.dart';
+import 'package:hive/hive.dart';
+import 'package:sparring/core/utils/helpers.dart';
+import '../../../../core/errors/failure.dart';
 import '../models/user_model.dart';
 import 'auth_local_data_source.dart';
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
-  final _sharedPreferences = GetIt.instance<SharedPreferences>();
+  final Box _userBox;
+
+  AuthLocalDataSourceImpl(this._userBox);
 
   @override
-  Future<Either<Failure, UserModel>> login(
-      String email, String password) async {
+  Future<void> cacheUserData(UserModel user) async {
+    await _userBox.put('user', user.toJson());
+  }
+
+  @override
+  Future<UserModel?> getCachedUserData() async {
+    final userData = _userBox.get('user');
+    if (userData != null) {
+      try {
+        final Map<String, dynamic> userMap =
+            Helpers().convertToMap<String, dynamic>(userData);
+        if (kDebugMode) print(userMap);
+        return UserModel.fromJson(userMap);
+      } catch (e) {
+        if (kDebugMode) print('Error parsing user data: $e');
+        throw CacheFailure('Error parsing user data');
+      }
+    }
+    return null;
+  }
+
+  @override
+  Future<void> clearCachedUserData() async {
     try {
-      // Mimic API login logic
-      final storedEmail = _sharedPreferences.getString('email');
-      final storedPassword = _sharedPreferences.getString('password');
-      final storedName = _sharedPreferences.getString('name');
-
-      if (storedEmail == null || storedPassword == null) {
-        return Left(ApiFailure('No user data found'));
-      }
-
-      if (storedEmail != email || storedPassword != password) {
-        return Left(ApiFailure('Invalid credentials'));
-      }
-
-      // Return the UserModel with the necessary fields from SharedPreferences
-      final user = UserModel(
-        id: 0, // You can set a default or mock ID for now
-        name: storedName!,
-        email: storedEmail,
-        phone: '', // Empty or mock phone as needed
-        website: '', // Empty or mock website as needed
-      );
-
-      return Right(user);
+      await _userBox.delete('user');
     } catch (e) {
-      return Left(ApiFailure('Failed to login: $e'));
+      if (kDebugMode) print('Error clearing cached user data: $e');
+      throw CacheFailure('Failed to clear cached user data: $e');
     }
   }
 
   @override
-  Future<Either<Failure, UserModel>> register({
-    required String email,
-    required String name,
-    required String password,
-  }) async {
+  Future<void> cacheAuthToken(String token) async {
     try {
-      // Mimic registration logic
-      await _sharedPreferences.setString('email', email);
-      await _sharedPreferences.setString('name', name);
-      await _sharedPreferences.setString('password', password);
-
-      // Returning a UserModel mock with the saved details (you can customize the ID)
-      final user = UserModel(
-        id: 0, // You can set a default or mock ID for now
-        name: name,
-        email: email,
-        phone: '', // Empty or mock phone as needed
-        website: '', // Empty or mock website as needed
-      );
-
-      return Right(user);
+      await _userBox.put('auth_token', token);
     } catch (e) {
-      return Left(ApiFailure('Failed to register: $e'));
+      if (kDebugMode) print('Error caching auth token: $e');
+      throw CacheFailure('Failed to cache auth token: $e');
+    }
+  }
+
+  @override
+  Future<String?> getCachedAuthToken() async {
+    try {
+      return _userBox.get('auth_token');
+    } catch (e) {
+      if (kDebugMode) print('Error fetching cached auth token: $e');
+      throw CacheFailure('Failed to fetch cached auth token: $e');
+    }
+  }
+
+  @override
+  Future<void> clearCachedAuthToken() async {
+    try {
+      await _userBox.delete('auth_token');
+    } catch (e) {
+      if (kDebugMode) print('Error clearing cached auth token: $e');
+      throw CacheFailure('Failed to clear cached auth token: $e');
     }
   }
 }

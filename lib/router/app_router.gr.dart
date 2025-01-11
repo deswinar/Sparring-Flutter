@@ -15,11 +15,30 @@ abstract class _$AppRouter extends RootStackRouter {
 
   @override
   final Map<String, PageFactory> pagesMap = {
+    AboutAppRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const AboutAppPage(),
+      );
+    },
     ArenaDetailsRoute.name: (routeData) {
       final args = routeData.argsAs<ArenaDetailsRouteArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: ArenaDetailsPage(arena: args.arena),
+        child: ArenaDetailsPage(
+          key: args.key,
+          arena: args.arena,
+        ),
+      );
+    },
+    EditProfileRoute.name: (routeData) {
+      final args = routeData.argsAs<EditProfileRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: EditProfilePage(
+          key: args.key,
+          user: args.user,
+        ),
       );
     },
     LoginRoute.name: (routeData) {
@@ -44,14 +63,32 @@ abstract class _$AppRouter extends RootStackRouter {
 }
 
 /// generated route for
+/// [AboutAppPage]
+class AboutAppRoute extends PageRouteInfo<void> {
+  const AboutAppRoute({List<PageRouteInfo>? children})
+      : super(
+          AboutAppRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'AboutAppRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
 /// [ArenaDetailsPage]
 class ArenaDetailsRoute extends PageRouteInfo<ArenaDetailsRouteArgs> {
   ArenaDetailsRoute({
+    Key? key,
     required Arena arena,
     List<PageRouteInfo>? children,
   }) : super(
           ArenaDetailsRoute.name,
-          args: ArenaDetailsRouteArgs(arena: arena),
+          args: ArenaDetailsRouteArgs(
+            key: key,
+            arena: arena,
+          ),
           initialChildren: children,
         );
 
@@ -62,13 +99,56 @@ class ArenaDetailsRoute extends PageRouteInfo<ArenaDetailsRouteArgs> {
 }
 
 class ArenaDetailsRouteArgs {
-  const ArenaDetailsRouteArgs({required this.arena});
+  const ArenaDetailsRouteArgs({
+    this.key,
+    required this.arena,
+  });
+
+  final Key? key;
 
   final Arena arena;
 
   @override
   String toString() {
-    return 'ArenaDetailsRouteArgs{arena: $arena}';
+    return 'ArenaDetailsRouteArgs{key: $key, arena: $arena}';
+  }
+}
+
+/// generated route for
+/// [EditProfilePage]
+class EditProfileRoute extends PageRouteInfo<EditProfileRouteArgs> {
+  EditProfileRoute({
+    Key? key,
+    required User user,
+    List<PageRouteInfo>? children,
+  }) : super(
+          EditProfileRoute.name,
+          args: EditProfileRouteArgs(
+            key: key,
+            user: user,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'EditProfileRoute';
+
+  static const PageInfo<EditProfileRouteArgs> page =
+      PageInfo<EditProfileRouteArgs>(name);
+}
+
+class EditProfileRouteArgs {
+  const EditProfileRouteArgs({
+    this.key,
+    required this.user,
+  });
+
+  final Key? key;
+
+  final User user;
+
+  @override
+  String toString() {
+    return 'EditProfileRouteArgs{key: $key, user: $user}';
   }
 }
 

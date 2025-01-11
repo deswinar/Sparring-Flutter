@@ -16,6 +16,14 @@ class ApiFailure extends Failure {
   ApiFailure(super.message);
 }
 
+class ServerFailure extends Failure {
+  ServerFailure(super.message);
+}
+
+class CacheFailure extends Failure {
+  CacheFailure(super.message);
+}
+
 // A failure for handling invalid input errors, like validation failures.
 class InvalidInputFailure extends Failure {
   InvalidInputFailure(super.message);
@@ -24,6 +32,11 @@ class InvalidInputFailure extends Failure {
 // A failure for handling authentication-related errors.
 class AuthFailure extends Failure {
   AuthFailure(super.message);
+}
+
+// A failure for handling database-related errors.
+class DatabaseFailure extends Failure {
+  DatabaseFailure(super.message);
 }
 
 // A failure for network connectivity issues.

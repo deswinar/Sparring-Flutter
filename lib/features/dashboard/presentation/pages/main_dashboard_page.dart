@@ -36,10 +36,10 @@ class _MainDashboardPageState extends State<MainDashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Sports Arena App"),
-        backgroundColor: Colors.blueAccent,
-      ),
+      // appBar: AppBar(
+      //   title: const Text("Sports Arena App"),
+      //   backgroundColor: Colors.blueAccent,
+      // ),
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
         child: _pages[_selectedIndex],

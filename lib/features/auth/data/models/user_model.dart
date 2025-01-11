@@ -20,10 +20,12 @@ class UserModel extends User {
       id: json['id'],
       name: json['name'],
       email: json['email'],
-      photoUrl: json['photoUrl'],
-      phone: json['phone'],
-      website: json['website'],
-      address: AddressModel.fromJson(json['address']),
+      photoUrl: json['photoUrl'] as String?, // Nullable
+      phone: json['phone'] as String?, // Nullable
+      website: json['website'] as String?, // Nullable
+      address: json['address'] != null
+          ? AddressModel.fromJson(json['address'])
+          : null, // Nullable
     );
   }
 
@@ -36,7 +38,7 @@ class UserModel extends User {
       'photoUrl': photoUrl,
       'phone': phone,
       'website': website,
-      'address': (address as AddressModel).toJson(),
+      'address': address != null ? (address as AddressModel).toJson() : null,
     };
   }
 
@@ -66,11 +68,11 @@ class AddressModel extends Address {
 
   factory AddressModel.fromJson(Map<String, dynamic> json) {
     return AddressModel(
-      street: json['street'],
-      suite: json['suite'],
-      city: json['city'],
-      zipcode: json['zipcode'],
-      geo: GeoModel.fromJson(json['geo']),
+      street: json['street'] ?? '', // Default empty string for nullable fields
+      suite: json['suite'] ?? '', // Default empty string
+      city: json['city'] ?? '', // Default empty string
+      zipcode: json['zipcode'] ?? '', // Default empty string
+      geo: GeoModel.fromJson(json['geo'] ?? {}), // Empty object as fallback
     );
   }
 
@@ -102,8 +104,8 @@ class GeoModel extends Geo {
 
   factory GeoModel.fromJson(Map<String, dynamic> json) {
     return GeoModel(
-      lat: json['lat'],
-      lng: json['lng'],
+      lat: json['lat'] ?? '', // Default empty string for nullable fields
+      lng: json['lng'] ?? '', // Default empty string
     );
   }
 

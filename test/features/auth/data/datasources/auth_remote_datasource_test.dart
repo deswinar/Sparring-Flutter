@@ -23,7 +23,7 @@ void main() {
       test('should return a UserModel when login is successful', () async {
         // Arrange
         const user = UserModel(
-          id: 1,
+          id: '1',
           name: 'Test User',
           email: email,
           phone: '123456789',
@@ -74,7 +74,7 @@ void main() {
       test('should return a UserModel when register is successful', () async {
         // Arrange
         const user = UserModel(
-          id: 2,
+          id: '2',
           name: name,
           email: email,
           phone: '987654321',

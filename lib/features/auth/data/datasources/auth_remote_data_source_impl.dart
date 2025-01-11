@@ -1,23 +1,24 @@
-import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import '../../../../core/errors/failure.dart';
-import '../../../../core/errors/exceptions.dart';
+import '../../../../core/utils/error_handler.dart';
 import '../models/user_model.dart';
-import '../../domain/entities/user.dart';
 import 'auth_remote_data_source.dart';
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final firebase_auth.FirebaseAuth firebaseAuth;
-  final FirebaseFirestore firestore;
+  final FirebaseAuth _firebaseAuth;
+  final FirebaseFirestore _firestore;
 
-  AuthRemoteDataSourceImpl(this.firebaseAuth, this.firestore);
+  AuthRemoteDataSourceImpl(this._firebaseAuth, this._firestore);
 
   @override
-  Future<Either<Failure, UserModel>> login(String email, String password) async {
+  @override
+  Future<UserModel> login(String email, String password) async {
     try {
       // Use Firebase Authentication to sign in the user
-      final userCredential = await firebaseAuth.signInWithEmailAndPassword(
+      final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -25,32 +26,37 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final user = userCredential.user;
       if (user != null) {
         // Fetch user additional data from Firestore
-        final userDoc = await firestore.collection('users').doc(user.uid).get();
+        final userDoc =
+            await _firestore.collection('users').doc(user.uid).get();
         if (userDoc.exists) {
           final userModel = UserModel.fromJson(userDoc.data()!);
-          return Right(userModel);
+          return userModel;
         } else {
-          return Left(AuthFailure('User data not found.'));
+          throw AuthFailure('User data not found.');
         }
       } else {
-        return Left(AuthFailure('User not found.'));
+        throw AuthFailure('User not found.');
       }
     } on firebase_auth.FirebaseAuthException catch (e) {
-      return Left(AuthFailure('Login failed: ${e.message ?? e.code}'));
+      // Use the mapping function for detailed error messages
+      throw mapFirebaseAuthException(e);
     } catch (e) {
-      return Left(AuthFailure('An unexpected error occurred: $e'));
+      if (kDebugMode) {
+        print('Unexpected error in login: $e');
+      }
+      throw AuthFailure('An unexpected error occurred: $e');
     }
   }
 
   @override
-  Future<Either<Failure, UserModel>> register({
+  Future<UserModel> register({
     required String email,
     required String name,
     required String password,
   }) async {
     try {
       // Use Firebase Authentication to register the user
-      final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
+      final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -58,29 +64,66 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final user = userCredential.user;
       if (user != null) {
         // Optionally, update the user's display name
-        await user.updateDisplayName(name);
+        // await user.updateDisplayName(name);
+        if (kDebugMode) {
+          print(user.uid);
+          print(email);
+          print(name);
+        }
 
         // Create a UserModel to store in Firestore with required fields
         final userModel = UserModel(
-          id: int.parse(user.uid), // Assuming the id comes from Firebase UID
+          id: user.uid, // Assuming the id comes from Firebase UID
           name: name,
           email: email,
+          photoUrl: "",
           phone: "", // Set as empty initially
           website: "", // Set as empty initially
         );
 
+        if (kDebugMode) print(userModel.toJson().toString());
+
         // Save user data to Firestore
-        await firestore.collection('users').doc(user.uid).set(userModel.toJson());
+        await _firestore
+            .collection('users')
+            .doc(user.uid)
+            .set(userModel.toJson());
 
         // Return the created user as an entity
-        return Right(userModel);
-      } else {  
-        return Left(AuthFailure('User creation failed.'));
+        return userModel;
+      } else {
+        throw AuthFailure('User creation failed.');
       }
     } on firebase_auth.FirebaseAuthException catch (e) {
-      return Left(AuthFailure('Registration failed: ${e.message ?? e.code}'));
+      throw mapFirebaseAuthException(e);
+    }
+  }
+
+  // Get the current authentication token for the logged-in user
+  @override
+  Future<String> getAuthToken() async {
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user != null) {
+        // Get the ID token for the current user
+        final idToken = await user.getIdToken();
+        return idToken!;
+      } else {
+        throw AuthFailure('No user is currently authenticated.');
+      }
     } catch (e) {
-      return Left(AuthFailure('An unexpected error occurred: $e'));
+      throw AuthFailure('Failed to retrieve auth token: $e');
+    }
+  }
+
+  @override
+  Future<void> logout() async {
+    try {
+      await _firebaseAuth.signOut();
+    } on FirebaseAuthException catch (e) {
+      throw mapFirebaseAuthException(e);
+    } catch (e) {
+      throw AuthFailure('Failed to sign out: $e');
     }
   }
 }

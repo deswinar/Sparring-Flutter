@@ -1,9 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:sparring/features/auth/domain/usecases/register_usecase.dart';
 import '../../domain/entities/user.dart';
+import '../../domain/usecases/check_login_status_usecase.dart';
 import '../../domain/usecases/login_usecase.dart';
-import '../../../../core/errors/failure.dart';
 import 'package:equatable/equatable.dart';
+
+import '../../domain/usecases/logout_usecase.dart';
 
 part 'auth_state.dart';
 
@@ -11,8 +13,26 @@ part 'auth_state.dart';
 class AuthCubit extends Cubit<AuthState> {
   final LoginUseCase loginUseCase;
   final RegisterUseCase registerUseCase;
+  final LogoutUseCase logoutUseCase;
+  final CheckLoginStatusUseCase checkLoginStatusUseCase;
 
-  AuthCubit({required this.loginUseCase, required this.registerUseCase}) : super(AuthInitial());
+  AuthCubit(
+      {required this.loginUseCase,
+      required this.registerUseCase,
+      required this.logoutUseCase,
+      required this.checkLoginStatusUseCase})
+      : super(AuthInitial());
+
+  // Check if the user is already logged in when the app starts
+  Future<void> checkLoginStatus() async {
+    emit(AuthLoading());
+
+    final result = await checkLoginStatusUseCase();
+    result.fold(
+      (failure) => emit(AuthFailure(failure.message)),
+      (user) => emit(AuthSuccess(user)),
+    );
+  }
 
   /// Perform login
   Future<void> login(String email, String password) async {
@@ -20,7 +40,7 @@ class AuthCubit extends Cubit<AuthState> {
     final result =
         await loginUseCase(LoginParams(email: email, password: password));
     result.fold(
-      (failure) => emit(AuthFailure(_mapFailureToMessage(failure))),
+      (failure) => emit(AuthFailure(failure.message)),
       (user) => emit(AuthSuccess(user)),
     );
   }
@@ -29,23 +49,20 @@ class AuthCubit extends Cubit<AuthState> {
   /// Perform register
   Future<void> register(String name, String email, String password) async {
     emit(AuthLoading());
-    final result =
-        await registerUseCase(RegisterParams(name: name, email: email, password: password));
+    final result = await registerUseCase(
+        RegisterParams(name: name, email: email, password: password));
     result.fold(
-      (failure) => emit(AuthFailure(_mapFailureToMessage(failure))),
+      (failure) => emit(AuthFailure(failure.message)),
       (user) => emit(AuthSuccess(user)),
     );
   }
 
-
-  /// Map Failure to user-friendly messages
-  String _mapFailureToMessage(Failure failure) {
-    if (failure is AuthFailure) {
-      return failure.message;
-    } else if (failure is NetworkFailure) {
-      return "Network connection issue. Please try again.";
-    } else {
-      return "An unexpected error occurred. Please try again.";
-    }
+  Future<void> logout() async {
+    emit(AuthLoading());
+    final result = await logoutUseCase();
+    result.fold(
+      (failure) => emit(AuthFailure(failure.message)),
+      (_) => emit(AuthInitial()),
+    );
   }
 }

@@ -25,6 +25,28 @@ class _LoginFormState extends State<LoginForm> {
     }
   }
 
+  String? _emailValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your email';
+    }
+    // Simple email validation
+    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+    if (!emailRegex.hasMatch(value)) {
+      return 'Please enter a valid email';
+    }
+    return null;
+  }
+
+  String? _passwordValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your password';
+    }
+    if (value.length < 6) {
+      return 'Password must be at least 6 characters';
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthCubit, AuthState>(
@@ -38,7 +60,6 @@ class _LoginFormState extends State<LoginForm> {
             const SnackBar(content: Text('Login successful!')),
           );
           context.replaceRoute(const MainDashboardRoute());
-          // Navigate to the next page or dashboard
         }
       },
       builder: (context, state) {
@@ -47,7 +68,7 @@ class _LoginFormState extends State<LoginForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Email field with icon
+              // Email field with icon and validation
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -61,10 +82,11 @@ class _LoginFormState extends State<LoginForm> {
                   ),
                 ),
                 keyboardType: TextInputType.emailAddress,
+                validator: _emailValidator,
               ),
               const SizedBox(height: 16),
 
-              // Password field with icon
+              // Password field with icon and validation
               TextFormField(
                 controller: _passwordController,
                 decoration: InputDecoration(
@@ -78,6 +100,7 @@ class _LoginFormState extends State<LoginForm> {
                   ),
                 ),
                 obscureText: true,
+                validator: _passwordValidator,
               ),
               const SizedBox(height: 24),
 
@@ -87,25 +110,17 @@ class _LoginFormState extends State<LoginForm> {
                   : ElevatedButton(
                       onPressed: _onLoginPressed,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context)
-                            .primaryColor, // Default background color
-                        foregroundColor: Theme.of(context)
-                            .secondaryHeaderColor, // Text color
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 16), // Padding inside the button
+                        backgroundColor: Theme.of(context).primaryColor,
+                        foregroundColor: Theme.of(context).secondaryHeaderColor,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(12.0), // Rounded corners
+                          borderRadius: BorderRadius.circular(12.0),
                         ),
-                        elevation: 4, // Button shadow (depth)
+                        elevation: 4,
                         textStyle: const TextStyle(
                           fontSize: 16,
-                          fontWeight:
-                              FontWeight.bold, // Bold text for prominence
+                          fontWeight: FontWeight.bold,
                         ),
-                        overlayColor: Theme.of(context)
-                            .primaryColor
-                            .withOpacity(0.2), // Change color on press
                       ),
                       child: const Text(
                         'Login',
@@ -118,7 +133,6 @@ class _LoginFormState extends State<LoginForm> {
               // Option to register
               TextButton(
                 onPressed: () {
-                  // Navigate to registration page
                   context.pushRoute(const RegisterRoute());
                 },
                 child: Text(
@@ -133,7 +147,6 @@ class _LoginFormState extends State<LoginForm> {
               TextButton(
                 onPressed: () {
                   // Navigate to Forgot Password page
-                  // context.pushRoute(const ForgotPasswordRoute());
                 },
                 child: Text(
                   'Forgot password?',
