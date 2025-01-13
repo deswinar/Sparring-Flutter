@@ -88,4 +88,33 @@ class AuthRepositoryImpl implements AuthRepository {
       return Left(e as Failure);
     }
   }
+
+  @override
+  Future<Either<Failure, User>> changePassword(
+      String currentPassword, String newPassword) async {
+    try {
+      // First, call the remote data source to change the password.
+      final result = await remoteDataSource.changePassword(
+          currentPassword: currentPassword, newPassword: newPassword);
+
+      if (result) {
+        // After a successful password change, fetch the updated user data.
+        final updatedUser = await remoteDataSource.getCurrentUser();
+
+        // Update the cached user data if needed.
+        final cachedUser = await localDataSource.getCachedUserData();
+        if (cachedUser != null) {
+          // Optionally, update any relevant user info in the cache.
+          await localDataSource.cacheUserData(
+              updatedUser); // Assuming you are storing updated user in local data source
+        }
+
+        return Right(updatedUser); // Return the updated User entity
+      } else {
+        return Left(AuthFailure('Password change failed'));
+      }
+    } catch (e) {
+      return Left(e as Failure);
+    }
+  }
 }

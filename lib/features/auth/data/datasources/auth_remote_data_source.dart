@@ -14,5 +14,10 @@ abstract class AuthRemoteDataSource {
 
   Future<String> getAuthToken();
 
+  Future<UserModel> getCurrentUser();
+
   Future<void> logout();
+
+  Future<bool> changePassword(
+      {required String currentPassword, required String newPassword});
 }

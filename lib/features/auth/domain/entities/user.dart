@@ -22,6 +22,27 @@ class User extends Equatable {
     this.address,
   });
 
+  /// Creates a copy of the User object with the given fields updated.
+  User copyWith({
+    String? id,
+    String? name,
+    String? email,
+    String? photoUrl,
+    String? phone,
+    String? website,
+    Address? address,
+  }) {
+    return User(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      photoUrl: photoUrl ?? this.photoUrl,
+      phone: phone ?? this.phone,
+      website: website ?? this.website,
+      address: address ?? this.address,
+    );
+  }
+
   @override
   List<Object?> get props =>
       [id, name, email, photoUrl, phone, website, address];
@@ -43,6 +64,23 @@ class Address extends Equatable {
     required this.geo,
   });
 
+  /// Creates a copy of the Address object with the given fields updated.
+  Address copyWith({
+    String? street,
+    String? suite,
+    String? city,
+    String? zipcode,
+    Geo? geo,
+  }) {
+    return Address(
+      street: street ?? this.street,
+      suite: suite ?? this.suite,
+      city: city ?? this.city,
+      zipcode: zipcode ?? this.zipcode,
+      geo: geo ?? this.geo,
+    );
+  }
+
   @override
   List<Object?> get props => [street, suite, city, zipcode, geo];
 }
@@ -53,6 +91,17 @@ class Geo extends Equatable {
   final String lng;
 
   const Geo({required this.lat, required this.lng});
+
+  /// Creates a copy of the Geo object with the given fields updated.
+  Geo copyWith({
+    String? lat,
+    String? lng,
+  }) {
+    return Geo(
+      lat: lat ?? this.lat,
+      lng: lng ?? this.lng,
+    );
+  }
 
   @override
   List<Object?> get props => [lat, lng];

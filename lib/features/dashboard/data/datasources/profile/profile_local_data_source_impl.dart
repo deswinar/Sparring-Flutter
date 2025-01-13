@@ -3,14 +3,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:sparring/core/utils/helpers.dart';
-import '../../../../core/errors/failure.dart';
-import '../models/user_model.dart';
-import 'auth_local_data_source.dart';
+import '../../../../../core/errors/failure.dart';
+import '../../../../auth/data/models/user_model.dart';
+import 'profile_local_data_source.dart';
 
-class AuthLocalDataSourceImpl implements AuthLocalDataSource {
+class ProfileLocalDataSourceImpl implements ProfileLocalDataSource {
   final Box _userBox;
 
-  AuthLocalDataSourceImpl(this._userBox);
+  ProfileLocalDataSourceImpl(this._userBox);
 
   @override
   Future<void> cacheUserData(UserModel user) async {
@@ -24,7 +24,6 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
       try {
         final Map<String, dynamic> userMap =
             Helpers().convertToMap<String, dynamic>(userData);
-        if (kDebugMode) print(userMap);
         return UserModel.fromJson(userMap);
       } catch (e) {
         if (kDebugMode) print('Error parsing user data: $e');

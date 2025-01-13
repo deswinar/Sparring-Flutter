@@ -117,6 +117,29 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
+  Future<UserModel> getCurrentUser() async {
+    try {
+      final firebaseUser = _firebaseAuth.currentUser;
+      if (firebaseUser != null) {
+        // Fetch the user's additional data from Firestore using their UID
+        final userDoc =
+            await _firestore.collection('users').doc(firebaseUser.uid).get();
+        if (userDoc.exists) {
+          // Convert the Firestore document data to a UserModel
+          final userModel = UserModel.fromJson(userDoc.data()!);
+          return userModel;
+        } else {
+          throw AuthFailure('User data not found.');
+        }
+      } else {
+        throw AuthFailure('No user is currently authenticated.');
+      }
+    } catch (e) {
+      throw AuthFailure('Failed to get current user: $e');
+    }
+  }
+
+  @override
   Future<void> logout() async {
     try {
       await _firebaseAuth.signOut();
@@ -124,6 +147,42 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw mapFirebaseAuthException(e);
     } catch (e) {
       throw AuthFailure('Failed to sign out: $e');
+    }
+  }
+
+  /// Changes the password of the currently logged-in user.
+  @override
+  Future<bool> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user == null) {
+        throw AuthFailure('No user is currently authenticated.');
+      }
+
+      // Reauthenticate the user
+      final email = user.email;
+      if (email == null) {
+        throw AuthFailure('Email is null for the authenticated user.');
+      }
+
+      final credential = EmailAuthProvider.credential(
+        email: email,
+        password: currentPassword,
+      );
+
+      await user.reauthenticateWithCredential(credential);
+
+      // Update password
+      await user.updatePassword(newPassword);
+
+      return true;
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      throw mapFirebaseAuthException(e);
+    } catch (e) {
+      throw AuthFailure('Failed to change password: $e');
     }
   }
 }

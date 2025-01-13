@@ -12,110 +12,106 @@ class AboutAppPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('About App'),
-        centerTitle: true,
-        backgroundColor: Colors.blueAccent,
-        elevation: 0,
+        backgroundColor: Theme.of(context).primaryColor,
+        elevation: 1,
       ),
-      body: Hero(
-        tag: 'profile-option-$aboutAppHeroTag',
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // App Info Section
-                Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 4,
-                  child: const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 40,
-                          backgroundColor: Colors.blueAccent,
-                          child: Icon(
-                            Icons.info_outline,
-                            size: 40,
-                            color: Colors.white,
-                          ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // App Info Section
+              Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 4,
+                child: const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 40,
+                        backgroundColor: Colors.blueAccent,
+                        child: Icon(
+                          Icons.info_outline,
+                          size: 40,
+                          color: Colors.white,
                         ),
-                        SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Sparring App',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                      ),
+                      SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Sparring App',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
                               ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Your ultimate sports arena booking platform.',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey,
-                                ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Your ultimate sports arena booking platform.',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 24),
-
-                // App Features Section
-                const Text(
-                  'App Features:',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
+              ),
+              const SizedBox(height: 24),
+      
+              // App Features Section
+              const Text(
+                'App Features:',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
                 ),
-                const SizedBox(height: 12),
-                _buildFeatureItem(Icons.book, 'Manage and book sports arenas'),
-                _buildFeatureItem(
-                    Icons.calendar_today, 'View and manage your bookings'),
-                _buildFeatureItem(
-                    Icons.location_on, 'Find sports arenas nearby'),
-                _buildFeatureItem(
-                    Icons.notifications, 'Get notified about your bookings'),
-                const SizedBox(height: 24),
-
-                // Developer Info Section
-                const Text(
-                  'Developer Information:',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
+              ),
+              const SizedBox(height: 12),
+              _buildFeatureItem(Icons.book, 'Manage and book sports arenas'),
+              _buildFeatureItem(
+                  Icons.calendar_today, 'View and manage your bookings'),
+              _buildFeatureItem(
+                  Icons.location_on, 'Find sports arenas nearby'),
+              _buildFeatureItem(
+                  Icons.notifications, 'Get notified about your bookings'),
+              const SizedBox(height: 24),
+      
+              // Developer Info Section
+              const Text(
+                'Developer Information:',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
                 ),
-                const SizedBox(height: 12),
-                _buildDeveloperInfoItem('Email', 'developer@example.com'),
-                _buildDeveloperInfoItem('Website', 'https://www.example.com'),
-                const SizedBox(height: 24),
-
-                // License Section
-                const Text(
-                  'Licenses:',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
+              ),
+              const SizedBox(height: 12),
+              _buildDeveloperInfoItem('Email', 'developer@example.com'),
+              _buildDeveloperInfoItem('Website', 'https://www.example.com'),
+              const SizedBox(height: 24),
+      
+              // License Section
+              const Text(
+                'Licenses:',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
                 ),
-                const SizedBox(height: 12),
-                _buildLicenseItem('Flutter', 'https://flutter.dev'),
-                _buildLicenseItem('Dart', 'https://dart.dev'),
-              ],
-            ),
+              ),
+              const SizedBox(height: 12),
+              _buildLicenseItem('Flutter', 'https://flutter.dev'),
+              _buildLicenseItem('Dart', 'https://dart.dev'),
+            ],
           ),
         ),
       ),

@@ -1,30 +1,33 @@
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:equatable/equatable.dart';
-// import 'package:sparring/core/error/failures.dart';
-// import 'package:sparring/features/profile/domain/entities/profile.dart';
-// import 'package:sparring/features/profile/domain/usecases/get_profile.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:equatable/equatable.dart';
 
-// import '../../../../auth/domain/entities/user.dart';
+import '../../../../auth/data/models/user_model.dart';
+import '../../../../auth/domain/entities/user.dart';
+import '../../../domain/usecases/get_profle_usecase.dart';
+import '../../../domain/usecases/update_profile_usecase.dart';
 
-// part 'profile_state.dart';
+part 'profile_state.dart';
 
-// class ProfileCubit extends Cubit<ProfileState> {
-//   final GetProfileUseCase getProfileUseCase;
+class ProfileCubit extends Cubit<ProfileState> {
+  final UpdateProfileUseCase updateProfileUseCase;
+  final GetProfileUseCase getProfileUseCase;
 
-//   ProfileCubit({required this.getProfileUseCase}) : super(ProfileInitial());
+  ProfileCubit(
+      {required this.updateProfileUseCase, required this.getProfileUseCase})
+      : super(ProfileInitial());
 
-//   Future<void> fetchProfile() async {
-//     emit(ProfileLoading());
-//     final result = await getProfile();
-//     result.fold(
-//       (failure) => emit(ProfileError(_mapFailureToMessage(failure))),
-//       (profile) => emit(ProfileLoaded(profile)),
-//     );
-//   }
+  Future<void> updateProfile(User user) async {
+    emit(ProfileLoading());
+    final result =
+        await updateProfileUseCase.call(UpdateProfileParams(user: user));
+    result.fold((failure) => emit(ProfileError(message: failure.message)),
+        (user) => emit(ProfileSuccess(user)));
+  }
 
-//   String _mapFailureToMessage(Failure failure) {
-//     if (failure is NetworkFailure) return 'No internet connection.';
-//     if (failure is ServerFailure) return 'Server error. Please try again.';
-//     return 'Unexpected error.';
-//   }
-// }
+  Future<void> getProfile() async {
+    emit(ProfileLoading());
+    final result = await getProfileUseCase.call();
+    result.fold((failure) => emit(ProfileError(message: failure.message)),
+        (user) => emit(ProfileSuccess(user)));
+  }
+}

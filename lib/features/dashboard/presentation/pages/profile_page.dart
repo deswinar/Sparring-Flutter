@@ -7,26 +7,27 @@ import 'package:sparring/features/auth/presentation/cubit/auth_cubit.dart';
 
 import '../../../../core/utils/constants.dart';
 import '../../../../router/app_router.dart';
+import '../cubit/profile/profile_cubit.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    context.read<AuthCubit>().checkLoginStatus();
+    context.read<ProfileCubit>().getProfile();
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
         centerTitle: true,
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Theme.of(context).primaryColor,
         elevation: 0,
       ),
-      body: BlocBuilder<AuthCubit, AuthState>(
+      body: BlocBuilder<ProfileCubit, ProfileState>(
         builder: (context, state) {
-          if (state is AuthLoading) {
+          if (state is ProfileLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is AuthSuccess) {
+          } else if (state is ProfileSuccess) {
             final user = state
                 .user; // Assuming `AuthAuthenticated` state holds the user entity
 
@@ -132,7 +133,6 @@ class ProfilePage extends StatelessWidget {
                           _buildProfileOption(
                             icon: Icons.edit,
                             title: 'Edit Profile',
-                            heroTitle: editProfileHeroTag,
                             onTap: () {
                               // Navigate to Edit Profile Page
                               context.pushRoute(EditProfileRoute(user: user));
@@ -142,16 +142,15 @@ class ProfilePage extends StatelessWidget {
                           _buildProfileOption(
                             icon: Icons.lock,
                             title: 'Change Password',
-                            heroTitle: changePasswordHeroTag,
                             onTap: () {
                               // Navigate to Change Password Page
+                              context.pushRoute(const ChangePasswordRoute());
                             },
                           ),
                           const Divider(height: 1),
                           _buildProfileOption(
                             icon: Icons.notifications,
                             title: 'Notification Preferences',
-                            heroTitle: notificiationPreferencesHeroTag,
                             onTap: () {
                               // Navigate to Notification Preferences Page
                             },
@@ -160,7 +159,6 @@ class ProfilePage extends StatelessWidget {
                           _buildProfileOption(
                             icon: Icons.info,
                             title: 'About App',
-                            heroTitle: aboutAppHeroTag,
                             onTap: () {
                               // Show App Info or Navigate to About Page
                               context.pushRoute(const AboutAppRoute());
@@ -242,26 +240,13 @@ class ProfilePage extends StatelessWidget {
   Widget _buildProfileOption({
     required IconData icon,
     required String title,
-    required String heroTitle,
     required VoidCallback onTap,
   }) {
-    final String heroTag =
-        'profile-option-$heroTitle'; // Unique hero tag based on title
-
     return ListTile(
-      leading: Hero(
-        tag: '$heroTag-icon', // Hero tag for the icon
-        child: Icon(icon, color: Colors.blueAccent),
-      ),
-      title: Hero(
-        tag: '$heroTag-title', // Hero tag for the title
-        child: Material(
-          color: Colors.transparent,
-          child: Text(
-            title,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-          ),
-        ),
+      leading: Icon(icon, color: Colors.blueAccent),
+      title: Text(
+        title,
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
       ),
       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
       onTap: onTap,

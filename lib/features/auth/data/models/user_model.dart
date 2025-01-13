@@ -14,6 +14,29 @@ class UserModel extends User {
     super.address,
   });
 
+  static UserModel fromEntity(User user) {
+    return UserModel(
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      photoUrl: user.photoUrl,
+      phone: user.phone,
+      website: user.website,
+      address: user.address == null
+          ? null
+          : AddressModel(
+              street: user.address!.street,
+              suite: user.address!.suite,
+              city: user.address!.city,
+              zipcode: user.address!.zipcode,
+              geo: GeoModel(
+                lat: user.address!.geo.lat,
+                lng: user.address!.geo.lng,
+              ),
+            ),
+    );
+  }
+
   /// Factory constructor to create a UserModel from a JSON response
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(

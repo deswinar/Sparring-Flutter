@@ -1,6 +1,6 @@
-import '../models/user_model.dart';
+import '../../../../auth/data/models/user_model.dart';
 
-abstract class AuthLocalDataSource {
+abstract class ProfileLocalDataSource {
   /// Cache the authenticated user data locally.
   Future<void> cacheUserData(UserModel user);
 

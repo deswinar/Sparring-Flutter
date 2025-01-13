@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
+import 'features/dashboard/presentation/cubit/change_password/change_password_cubit.dart';
+import 'features/dashboard/presentation/cubit/profile/profile_cubit.dart';
 import 'injection_container.dart';
 import 'router/app_router.dart';
 import 'core/theme/app_theme.dart';
@@ -59,6 +61,12 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (_) => sl<AuthCubit>()..checkLoginStatus(),
+        ),
+        BlocProvider(
+          create: (_) => sl<ChangePasswordCubit>(),
+        ),
+        BlocProvider(
+          create: (_) => sl<ProfileCubit>(),
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(

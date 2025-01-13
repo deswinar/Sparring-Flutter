@@ -24,11 +24,31 @@ class AuthSuccess extends AuthState {
   List<Object?> get props => [user];
 }
 
-/// State when authentication fails
-class AuthFailure extends AuthState {
+/// State when change password succeeds
+class AuthChangePasswordSuccess extends AuthState {
+  final User user;
+
+  const AuthChangePasswordSuccess(this.user);
+
+  @override
+  List<Object?> get props => [user];
+}
+
+/// State when change password fail
+class AuthChangePasswordFailure extends AuthState {
   final String message;
 
-  const AuthFailure(this.message);
+  const AuthChangePasswordFailure(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+/// State when authentication fails
+class AuthError extends AuthState {
+  final String message;
+
+  const AuthError(this.message);
 
   @override
   List<Object?> get props => [message];

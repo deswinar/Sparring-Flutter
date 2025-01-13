@@ -1,4 +1,4 @@
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sparring/features/auth/domain/usecases/register_usecase.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/usecases/check_login_status_usecase.dart';
@@ -29,7 +29,7 @@ class AuthCubit extends Cubit<AuthState> {
 
     final result = await checkLoginStatusUseCase();
     result.fold(
-      (failure) => emit(AuthFailure(failure.message)),
+      (failure) => emit(AuthError(failure.message)),
       (user) => emit(AuthSuccess(user)),
     );
   }
@@ -40,7 +40,7 @@ class AuthCubit extends Cubit<AuthState> {
     final result =
         await loginUseCase(LoginParams(email: email, password: password));
     result.fold(
-      (failure) => emit(AuthFailure(failure.message)),
+      (failure) => emit(AuthError(failure.message)),
       (user) => emit(AuthSuccess(user)),
     );
   }
@@ -52,7 +52,7 @@ class AuthCubit extends Cubit<AuthState> {
     final result = await registerUseCase(
         RegisterParams(name: name, email: email, password: password));
     result.fold(
-      (failure) => emit(AuthFailure(failure.message)),
+      (failure) => emit(AuthError(failure.message)),
       (user) => emit(AuthSuccess(user)),
     );
   }
@@ -61,7 +61,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthLoading());
     final result = await logoutUseCase();
     result.fold(
-      (failure) => emit(AuthFailure(failure.message)),
+      (failure) => emit(AuthError(failure.message)),
       (_) => emit(AuthInitial()),
     );
   }

@@ -31,6 +31,12 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    ChangePasswordRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const ChangePasswordPage(),
+      );
+    },
     EditProfileRoute.name: (routeData) {
       final args = routeData.argsAs<EditProfileRouteArgs>();
       return AutoRoutePage<dynamic>(
@@ -112,6 +118,20 @@ class ArenaDetailsRouteArgs {
   String toString() {
     return 'ArenaDetailsRouteArgs{key: $key, arena: $arena}';
   }
+}
+
+/// generated route for
+/// [ChangePasswordPage]
+class ChangePasswordRoute extends PageRouteInfo<void> {
+  const ChangePasswordRoute({List<PageRouteInfo>? children})
+      : super(
+          ChangePasswordRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'ChangePasswordRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
 }
 
 /// generated route for
