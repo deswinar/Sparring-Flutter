@@ -31,6 +31,16 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    BookingFormRoute.name: (routeData) {
+      final args = routeData.argsAs<BookingFormRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: BookingFormPage(
+          key: args.key,
+          arena: args.arena,
+        ),
+      );
+    },
     ChangePasswordRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -117,6 +127,44 @@ class ArenaDetailsRouteArgs {
   @override
   String toString() {
     return 'ArenaDetailsRouteArgs{key: $key, arena: $arena}';
+  }
+}
+
+/// generated route for
+/// [BookingFormPage]
+class BookingFormRoute extends PageRouteInfo<BookingFormRouteArgs> {
+  BookingFormRoute({
+    Key? key,
+    required Arena arena,
+    List<PageRouteInfo>? children,
+  }) : super(
+          BookingFormRoute.name,
+          args: BookingFormRouteArgs(
+            key: key,
+            arena: arena,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'BookingFormRoute';
+
+  static const PageInfo<BookingFormRouteArgs> page =
+      PageInfo<BookingFormRouteArgs>(name);
+}
+
+class BookingFormRouteArgs {
+  const BookingFormRouteArgs({
+    this.key,
+    required this.arena,
+  });
+
+  final Key? key;
+
+  final Arena arena;
+
+  @override
+  String toString() {
+    return 'BookingFormRouteArgs{key: $key, arena: $arena}';
   }
 }
 

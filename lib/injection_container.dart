@@ -24,8 +24,8 @@ import 'features/dashboard/data/datasources/profile/profile_remote_data_source_i
 import 'features/dashboard/data/repositories/profile_repository_impl.dart';
 import 'features/dashboard/domain/repositories/profile_repository.dart';
 import 'features/dashboard/domain/usecases/change_password_usecase.dart';
-import 'features/dashboard/domain/usecases/get_profle_usecase.dart';
-import 'features/dashboard/domain/usecases/update_profile_usecase.dart';
+import 'features/dashboard/domain/usecases/profile/get_profle_usecase.dart';
+import 'features/dashboard/domain/usecases/profile/update_profile_usecase.dart';
 import 'features/dashboard/presentation/cubit/change_password/change_password_cubit.dart';
 import 'features/dashboard/presentation/cubit/profile/profile_cubit.dart';
 

@@ -8,7 +8,8 @@ import '../features/dashboard/domain/entities/arena.dart';
 import '../features/dashboard/presentation/pages/arena_details_page.dart';
 import '../features/auth/presentation/pages/login_page.dart';
 import '../features/auth/presentation/pages/register_page.dart';
-import '../features/dashboard/presentation/pages/main_dashboard_page.dart';
+import '../features/dashboard/presentation/pages/booking_form_page.dart';
+import '../features/dashboard/presentation/pages/main_dashboard/main_dashboard_page.dart';
 import '../features/dashboard/presentation/pages/about_app_page.dart';
 import '../features/dashboard/presentation/pages/edit_profile_page.dart';
 import '../features/dashboard/presentation/pages/change_password_page.dart';
@@ -35,6 +36,11 @@ class AppRouter extends _$AppRouter {
         ),
         CustomRoute(
           page: ChangePasswordRoute.page,
+          transitionsBuilder: SlideAndFadeTransitionBuilder.build,
+          durationInMilliseconds: 500,
+        ),
+        CustomRoute(
+          page: BookingFormRoute.page,
           transitionsBuilder: SlideAndFadeTransitionBuilder.build,
           durationInMilliseconds: 500,
         ),

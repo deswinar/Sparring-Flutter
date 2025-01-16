@@ -3,8 +3,8 @@ import 'package:equatable/equatable.dart';
 
 import '../../../../auth/data/models/user_model.dart';
 import '../../../../auth/domain/entities/user.dart';
-import '../../../domain/usecases/get_profle_usecase.dart';
-import '../../../domain/usecases/update_profile_usecase.dart';
+import '../../../domain/usecases/profile/get_profle_usecase.dart';
+import '../../../domain/usecases/profile/update_profile_usecase.dart';
 
 part 'profile_state.dart';
 

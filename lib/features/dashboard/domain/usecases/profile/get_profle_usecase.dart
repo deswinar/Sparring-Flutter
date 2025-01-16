@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 
-import '../../../../core/errors/failure.dart';
-import '../../../auth/domain/entities/user.dart';
-import '../repositories/profile_repository.dart';
+import '../../../../../core/errors/failure.dart';
+import '../../../../auth/domain/entities/user.dart';
+import '../../repositories/profile_repository.dart';
 
 class GetProfileUseCase {
   final ProfileRepository repository;

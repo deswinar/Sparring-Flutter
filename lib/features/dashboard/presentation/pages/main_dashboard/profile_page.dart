@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sparring/features/auth/presentation/cubit/auth_cubit.dart';
 
-import '../../../../core/utils/constants.dart';
-import '../../../../router/app_router.dart';
-import '../cubit/profile/profile_cubit.dart';
+import '../../../../../core/utils/constants.dart';
+import '../../../../../router/app_router.dart';
+import '../../cubit/profile/profile_cubit.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});

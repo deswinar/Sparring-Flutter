@@ -2,10 +2,10 @@
 
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
-import '../../../../core/errors/failure.dart';
-import '../../../auth/data/models/user_model.dart';
-import '../../../auth/domain/entities/user.dart';
-import '../repositories/profile_repository.dart';
+import '../../../../../core/errors/failure.dart';
+import '../../../../auth/data/models/user_model.dart';
+import '../../../../auth/domain/entities/user.dart';
+import '../../repositories/profile_repository.dart';
 
 class UpdateProfileUseCase {
   final ProfileRepository _profileRepository;

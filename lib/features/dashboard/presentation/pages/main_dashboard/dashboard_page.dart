@@ -1,17 +1,17 @@
 // lib/features/dashboard/presentation/pages/dashboard_page.dart
 
 import 'package:flutter/material.dart';
-import '../../domain/entities/arena.dart';
-import '../widgets/favorite_arenas_widget.dart';
-import '../widgets/featured_arenas_widget.dart';
-import '../widgets/filters_widget.dart';
-import '../widgets/map_widget.dart';
-import '../widgets/notification_bell.dart';
-import '../widgets/profile_icon.dart';
-import '../widgets/recent_bookings_widget.dart';
-import '../widgets/special_offers_widget.dart';
-import '../widgets/upcoming_booking_card.dart';
-import '../widgets/welcome_message.dart';
+import '../../../domain/entities/arena.dart';
+import '../../widgets/favorite_arenas_widget.dart';
+import '../../widgets/featured_arenas_widget.dart';
+import '../../widgets/filters_widget.dart';
+import '../../widgets/map_widget.dart';
+import '../../widgets/notification_bell.dart';
+import '../../widgets/profile_icon.dart';
+import '../../widgets/recent_bookings_widget.dart';
+import '../../widgets/special_offers_widget.dart';
+import '../../widgets/upcoming_booking_card.dart';
+import '../../widgets/welcome_message.dart';
 
 class DashboardPage extends StatelessWidget {
   DashboardPage({super.key});
@@ -26,15 +26,27 @@ class DashboardPage extends StatelessWidget {
       rating: 4.5,
       description: "A premium sports arena with top-notch facilities.",
       images: [
-        "https://via.placeholder.com/150",
-        "https://via.placeholder.com/200"
+        "https://res.cloudinary.com/djnfz4ehq/image/upload/v1736996529/sport-arena_iw5lpi.jpg",
+        "https://res.cloudinary.com/djnfz4ehq/image/upload/v1736996529/sport-arena_iw5lpi.jpg"
       ],
       price: 50.0,
       isFeatured: true,
       amenities: ["Parking", "WiFi", "Locker Rooms"],
       availableFields: [
-        {"name": "Field 1", "price": 20.0, "availability": true},
-        {"name": "Field 2", "price": 25.0, "availability": false}
+        {
+          "name": "Field 1",
+          "price": 20.0,
+          "availability": true,
+          "openingHour": "07:00", // New property
+          "closingHour": "21:00" // New property
+        },
+        {
+          "name": "Field 2",
+          "price": 25.0,
+          "availability": true,
+          "openingHour": "08:00",
+          "closingHour": "22:00"
+        }
       ],
       reviews: ["Great place!", "Loved it!"],
     ),
@@ -46,13 +58,19 @@ class DashboardPage extends StatelessWidget {
       rating: 4.0,
       description: "Affordable and well-maintained sports fields.",
       images: [
-        "https://via.placeholder.com/150",
+        "https://res.cloudinary.com/djnfz4ehq/image/upload/v1736996529/sport-arena_iw5lpi.jpg",
       ],
       price: 30.0,
       isFeatured: true,
       amenities: ["Parking", "Cafeteria"],
       availableFields: [
-        {"name": "Court 1", "price": 15.0, "availability": true},
+        {
+          "name": "Court 1",
+          "price": 15.0,
+          "availability": true,
+          "openingHour": "09:00",
+          "closingHour": "20:00"
+        }
       ],
       reviews: ["Good experience.", "Highly recommend."],
     ),
