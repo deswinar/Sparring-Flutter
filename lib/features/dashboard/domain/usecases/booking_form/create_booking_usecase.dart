@@ -8,16 +8,14 @@ class CreateBookingParams {
   final String arenaId;
   final String fieldId;
   final String userId;
-  final DateTime startTime;
-  final DateTime endTime;
+  final List<Map<String, DateTime>> bookings;
   final double totalPrice;
 
   CreateBookingParams({
     required this.arenaId,
     required this.fieldId,
     required this.userId,
-    required this.startTime,
-    required this.endTime,
+    required this.bookings,
     required this.totalPrice,
   });
 }

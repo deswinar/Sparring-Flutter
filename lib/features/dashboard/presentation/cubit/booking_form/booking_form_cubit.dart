@@ -15,8 +15,7 @@ class BookingFormCubit extends Cubit<BookingFormState> {
     required String arenaId,
     required String fieldId,
     required String userId,
-    required DateTime startTime,
-    required DateTime endTime,
+    required List<Map<String, DateTime>> bookings,
     required double totalPrice,
   }) async {
     emit(BookingFormLoading());
@@ -24,8 +23,7 @@ class BookingFormCubit extends Cubit<BookingFormState> {
       arenaId: arenaId,
       fieldId: fieldId,
       userId: userId,
-      startTime: startTime,
-      endTime: endTime,
+      bookings: bookings,
       totalPrice: totalPrice,
     ));
     result.fold(

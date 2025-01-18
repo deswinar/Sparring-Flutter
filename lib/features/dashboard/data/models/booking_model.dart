@@ -9,8 +9,8 @@ class BookingModel extends Booking {
     required String arenaId,
     required String userId,
     required String fieldId,
-    required DateTime startTime,
-    required DateTime endTime,
+    required DateTime date,
+    required List<Map<String, String>> timeSlots,
     required double totalPrice,
     required String status,
     required DateTime createdAt,
@@ -20,8 +20,8 @@ class BookingModel extends Booking {
           arenaId: arenaId,
           userId: userId,
           fieldId: fieldId,
-          startTime: startTime,
-          endTime: endTime,
+          date: date,
+          timeSlots: timeSlots,
           totalPrice: totalPrice,
           status: status,
           createdAt: createdAt,
@@ -35,8 +35,13 @@ class BookingModel extends Booking {
       arenaId: json['arena_id'] as String,
       userId: json['user_id'] as String,
       fieldId: json['field_id'] as String,
-      startTime: DateTime.parse(json['start_time'] as String),
-      endTime: DateTime.parse(json['end_time'] as String),
+      date: DateTime.parse(json['date'] as String),
+      timeSlots: (json['time_slots'] as List<dynamic>)
+          .map((slot) => {
+                'start': slot['start'] as String,
+                'end': slot['end'] as String,
+              })
+          .toList(),
       totalPrice: (json['total_price'] as num).toDouble(),
       status: json['status'] as String,
       createdAt: DateTime.parse(json['created_at'] as String),
@@ -51,8 +56,13 @@ class BookingModel extends Booking {
       'arena_id': arenaId,
       'user_id': userId,
       'field_id': fieldId,
-      'start_time': startTime.toIso8601String(),
-      'end_time': endTime.toIso8601String(),
+      'date': date.toIso8601String(),
+      'time_slots': timeSlots
+          .map((slot) => {
+                'start': slot['start'],
+                'end': slot['end'],
+              })
+          .toList(),
       'total_price': totalPrice,
       'status': status,
       'created_at': createdAt.toIso8601String(),

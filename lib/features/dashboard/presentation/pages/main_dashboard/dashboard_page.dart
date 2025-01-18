@@ -34,6 +34,7 @@ class DashboardPage extends StatelessWidget {
       amenities: ["Parking", "WiFi", "Locker Rooms"],
       availableFields: [
         {
+          "id": "field1",
           "name": "Field 1",
           "price": 20.0,
           "availability": true,
@@ -41,6 +42,7 @@ class DashboardPage extends StatelessWidget {
           "closingHour": "21:00" // New property
         },
         {
+          "id": "field2",
           "name": "Field 2",
           "price": 25.0,
           "availability": true,
@@ -65,6 +67,7 @@ class DashboardPage extends StatelessWidget {
       amenities: ["Parking", "Cafeteria"],
       availableFields: [
         {
+          "id": "court1",
           "name": "Court 1",
           "price": 15.0,
           "availability": true,

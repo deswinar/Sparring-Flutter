@@ -2,10 +2,12 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart'; // For date formatting
+import 'package:intl/intl.dart';
 
 import '../../domain/entities/arena.dart';
+import '../../domain/entities/booking.dart';
 import '../cubit/booking_form/booking_form_cubit.dart';
+import '../cubit/profile/profile_cubit.dart';
 
 @RoutePage()
 class BookingFormPage extends StatefulWidget {
@@ -19,225 +21,275 @@ class BookingFormPage extends StatefulWidget {
 
 class _BookingFormPageState extends State<BookingFormPage> {
   String? selectedField;
-  String? selectedTimeSlot;
   DateTime? selectedDate;
-  double? calculatedPrice;
-  List<String> availableTimeSlots = [];
+  List<String> selectedTimeSlots = [];
+  List<Map<String, dynamic>> availableTimeSlots = [];
+  String? userId;
+
+  // Dummy bookings for testing
+  // Dummy bookings for testing
+  final List<Booking> dummyBookings = [
+    Booking(
+      id: "1",
+      arenaId: "arena_1",
+      userId: "user_1",
+      fieldId: "Field 1",
+      date: DateTime(2025, 1, 18), // 18-01-2025
+      timeSlots: [
+        {"start": "07:00", "end": "08:00"},
+        {"start": "09:00", "end": "10:00"},
+      ],
+      totalPrice: 20.0,
+      status: "confirmed",
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    ),
+    Booking(
+      id: "2",
+      arenaId: "arena_1",
+      userId: "user_2",
+      fieldId: "Field 2",
+      date: DateTime(2025, 1, 18),
+      timeSlots: [
+        {"start": "15:00", "end": "16:00"},
+      ],
+      totalPrice: 10.0,
+      status: "pending",
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    ),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch user profile if not already loaded
+    context.read<ProfileCubit>().getProfile();
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (kDebugMode) print("Available Fields: ${widget.arena.availableFields}");
     return Scaffold(
       appBar: AppBar(
         title: Text("Book ${widget.arena.name}"),
         backgroundColor: Colors.teal,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Field Dropdown
-            DropdownButtonFormField<String>(
-              decoration: const InputDecoration(
-                labelText: "Select Field",
-                border: OutlineInputBorder(),
-              ),
-              items: widget.arena.availableFields.map((field) {
-                return DropdownMenuItem<String>(
-                  value: field["name"], // Ensure this matches selectedField
-                  child: Text("${field["name"]} (\$${field["price"]}/hour)"),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  if (kDebugMode) print("Selected Field: $selectedField");
-                  if (kDebugMode) print("Selected Date: $selectedDate");
-                  selectedField = value;
-                  selectedTimeSlot = null; // Reset selected time slot
-                  calculatedPrice = null; // Reset price
-                  _generateTimeSlots();
-                });
-              },
-              value: widget.arena.availableFields
-                      .any((field) => field["name"] == selectedField)
-                  ? selectedField
-                  : null, // Ensure the value exists in items
-            ),
-
-            const SizedBox(height: 16),
-
-            // Date Picker
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: "Select Date",
-                border: OutlineInputBorder(),
-                suffixIcon: Icon(Icons.calendar_today),
-              ),
-              readOnly: true,
-              onTap: () async {
-                final pickedDate = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime.now().add(const Duration(days: 365)),
-                );
-                if (kDebugMode) print("Selected Field: $selectedField");
-                if (kDebugMode) print("Selected Date: $selectedDate");
-                if (pickedDate != null) {
-                  setState(() {
-                    selectedDate = pickedDate;
-                    selectedTimeSlot = null; // Reset selected time slot
-                    _generateTimeSlots();
-                  });
-                }
-              },
-              controller: TextEditingController(
-                text: selectedDate != null
-                    ? DateFormat("yyyy-MM-dd").format(selectedDate!)
-                    : "",
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Time Slot Dropdown
-            // Time Slot Selection
-            if (availableTimeSlots.isNotEmpty)
-              Column(
+      body: BlocBuilder<ProfileCubit, ProfileState>(
+        builder: (context, state) {
+          if (state is ProfileLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is ProfileSuccess) {
+            userId = state.user.id; // Extract userId from the loaded profile
+          } else if (state is ProfileError) {
+            return Center(
+                child: Text("Failed to load profile: ${state.message}"));
+          }
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Select Time Slot",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8.0,
-                    runSpacing: 8.0,
-                    children: availableTimeSlots.map((slot) {
-                      bool isOccupied = _isTimeSlotOccupied(slot);
-                      return GestureDetector(
-                        onTap: isOccupied
-                            ? null
-                            : () {
-                                setState(() {
-                                  selectedTimeSlot = slot;
-                                  calculatedPrice = _calculatePrice();
-                                });
-                              },
-                        child: Chip(
-                          label: Text(
-                            slot,
-                            style: TextStyle(
-                              color: isOccupied ? Colors.white : Colors.black,
-                            ),
-                          ),
-                          backgroundColor:
-                              isOccupied ? Colors.red : Colors.green,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                        ),
+                  // Field Dropdown
+                  DropdownButtonFormField<String>(
+                    decoration: const InputDecoration(
+                      labelText: "Select Field",
+                      border: OutlineInputBorder(),
+                    ),
+                    items: widget.arena.availableFields.map((field) {
+                      return DropdownMenuItem<String>(
+                        value: field["name"],
+                        child:
+                            Text("${field["name"]} (\$${field["price"]}/hour)"),
                       );
                     }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedField = value;
+                        selectedTimeSlots
+                            .clear(); // Clear previously selected slots
+                        _generateTimeSlots();
+                      });
+                    },
+                    value: selectedField,
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Date Picker
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: "Select Date",
+                      border: OutlineInputBorder(),
+                      suffixIcon: Icon(Icons.calendar_today),
+                    ),
+                    readOnly: true,
+                    onTap: () async {
+                      final pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime.now().add(const Duration(days: 365)),
+                      );
+                      if (pickedDate != null) {
+                        setState(() {
+                          selectedDate = pickedDate;
+                          selectedTimeSlots
+                              .clear(); // Clear previously selected slots
+                          _generateTimeSlots();
+                        });
+                      }
+                    },
+                    controller: TextEditingController(
+                      text: selectedDate != null
+                          ? DateFormat("yyyy-MM-dd").format(selectedDate!)
+                          : "",
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Time Slot Selection
+                  if (availableTimeSlots.isNotEmpty)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Select Time Slots",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8.0,
+                          runSpacing: 8.0,
+                          children: availableTimeSlots.map((slotData) {
+                            final slot = slotData["slot"] as String;
+                            final isEnabled = slotData["enabled"] as bool;
+
+                            return FilterChip(
+                              label: Text(
+                                slot,
+                                style: TextStyle(
+                                  color: selectedTimeSlots.contains(slot)
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
+                              ),
+                              selected: selectedTimeSlots.contains(slot),
+                              onSelected: isEnabled
+                                  ? (isSelected) {
+                                      setState(() {
+                                        if (isSelected) {
+                                          selectedTimeSlots.add(slot);
+                                        } else {
+                                          selectedTimeSlots.remove(slot);
+                                        }
+                                      });
+                                    }
+                                  : null,
+                              selectedColor: Colors.teal,
+                              backgroundColor: isEnabled
+                                  ? Colors.grey.shade200
+                                  : Colors.grey.shade400,
+                              side: BorderSide(
+                                color: selectedTimeSlots.contains(slot)
+                                    ? Colors.teal
+                                    : Colors.transparent,
+                              ),
+                              showCheckmark:
+                                  false, // Hides the default checkmark icon
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
+                  const SizedBox(height: 16),
+
+                  // Price Display
+                  if (selectedTimeSlots.isNotEmpty)
+                    Text(
+                      "Total Price: \$${_calculatePrice().toStringAsFixed(2)}",
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  const SizedBox(height: 32),
+
+                  // Confirm Button
+                  ElevatedButton(
+                    onPressed: selectedField != null &&
+                            selectedDate != null &&
+                            selectedTimeSlots.isNotEmpty
+                        ? () {
+                            _confirmBooking(context);
+                          }
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: Theme.of(context).primaryColor,
+                    ),
+                    child: const Center(
+                      child: Text(
+                        "Confirm Booking",
+                        style: TextStyle(fontSize: 16, color: Colors.white),
+                      ),
+                    ),
                   ),
                 ],
               ),
-            const SizedBox(height: 16),
-
-            // Price Display
-            if (calculatedPrice != null)
-              Text(
-                "Total Price: \$${calculatedPrice!.toStringAsFixed(2)}",
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            const SizedBox(height: 32),
-
-            // Confirm Button
-            ElevatedButton(
-              onPressed: selectedField != null &&
-                      selectedDate != null &&
-                      selectedTimeSlot != null
-                  ? () {
-                      _confirmBooking(context);
-                    }
-                  : null,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: Colors.teal,
-              ),
-              child: const Center(
-                child: Text(
-                  "Confirm Booking",
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
-  // Function to check if a time slot is occupied
-  bool _isTimeSlotOccupied(String slot) {
-    // Replace this logic with actual occupied time slots data
-    // Currently, assuming no slots are occupied for demo purposes
-    // Example: Use a list of occupied time slots and check if the slot is in the list
-    return false;
-  }
-
+  // Generate time slots
   void _generateTimeSlots() {
     if (selectedField == null || selectedDate == null) {
       setState(() {
-        availableTimeSlots = []; // No time slots available
+        availableTimeSlots = [];
       });
       return;
     }
 
-    // Find the selected field
     final fieldData = widget.arena.availableFields.firstWhere(
       (field) => field['name'] == selectedField,
-      orElse: () => {}, // Return an empty map if no match is found
     );
 
-    if (fieldData.isEmpty) {
-      setState(() {
-        availableTimeSlots = []; // Reset time slots if field not found
-      });
-      return;
-    }
-
-    // Extract opening and closing hours
     final openingHour = _parseTime(fieldData['openingHour']);
     final closingHour = _parseTime(fieldData['closingHour']);
 
     if (openingHour == null || closingHour == null) {
       setState(() {
-        availableTimeSlots = []; // Invalid hours, no time slots
+        availableTimeSlots = [];
       });
       return;
     }
 
-    // Convert TimeOfDay to DateTime for comparison
     final openingDateTime = _toDateTime(selectedDate!, openingHour);
     final closingDateTime = _toDateTime(selectedDate!, closingHour);
 
-    if (openingDateTime.isAfter(closingDateTime)) {
-      setState(() {
-        availableTimeSlots = []; // Invalid range, no time slots
-      });
-      return;
-    }
-
-    // Generate time slots (e.g., 1-hour intervals)
-    final List<String> timeSlots = [];
+    final now = DateTime.now();
+    final List<Map<String, dynamic>> timeSlots = [];
     DateTime currentTime = openingDateTime;
 
     while (currentTime.isBefore(closingDateTime)) {
-      timeSlots.add(
-          "${_formatTime(currentTime)} - ${_formatTime(currentTime.add(const Duration(hours: 1)))}");
+      final isPast = currentTime.isBefore(now) ||
+          currentTime.isBefore(now.add(const Duration(hours: 1)));
+
+      final slotStart = _formatTime(currentTime);
+      final slotEnd = _formatTime(currentTime.add(const Duration(hours: 1)));
+
+      // Check if the time slot is already booked
+      final isBooked = dummyBookings.any((booking) =>
+          booking.fieldId == selectedField &&
+          booking.date == selectedDate &&
+          booking.timeSlots.any(
+              (slot) => slot["start"] == slotStart && slot["end"] == slotEnd));
+
+      timeSlots.add({
+        "slot": "$slotStart - $slotEnd",
+        "enabled": !isPast && !isBooked,
+      });
       currentTime = currentTime.add(const Duration(hours: 1));
     }
 
@@ -246,67 +298,77 @@ class _BookingFormPageState extends State<BookingFormPage> {
     });
   }
 
-// Helper function to parse time (HH:mm format)
+  // Parse time string (HH:mm) to TimeOfDay
   TimeOfDay? _parseTime(String time) {
     try {
       final parts = time.split(':');
-      if (parts.length != 2) return null;
-      final hour = int.parse(parts[0]);
-      final minute = int.parse(parts[1]);
-      return TimeOfDay(hour: hour, minute: minute);
+      return TimeOfDay(
+        hour: int.parse(parts[0]),
+        minute: int.parse(parts[1]),
+      );
     } catch (_) {
       return null;
     }
   }
 
-// Helper function to format DateTime into HH:mm
-  String _formatTime(DateTime time) {
-    return "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}";
-  }
-
-// Helper function to convert TimeOfDay to DateTime
+  // Convert TimeOfDay to DateTime
   DateTime _toDateTime(DateTime date, TimeOfDay time) {
     return DateTime(date.year, date.month, date.day, time.hour, time.minute);
   }
 
-  double _calculatePrice() {
-    final selectedFieldData = widget.arena.availableFields.firstWhere(
-      (field) => field["id"] == selectedField,
-    );
-    return selectedFieldData["price"] as double;
+  // Format DateTime to HH:mm
+  String _formatTime(DateTime time) {
+    return "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}";
   }
 
+  // Calculate total price
+  double _calculatePrice() {
+    final fieldData = widget.arena.availableFields.firstWhere(
+      (field) => field["name"] == selectedField,
+    );
+    final pricePerHour = fieldData["price"] as double;
+    return selectedTimeSlots.length * pricePerHour;
+  }
+
+  // Confirm booking
   void _confirmBooking(BuildContext context) {
     final bookingCubit = context.read<BookingFormCubit>();
 
-    final timeSlotParts = selectedTimeSlot!.split(" - ");
-    final startTimeParts = timeSlotParts[0].split(":");
-    final endTimeParts = timeSlotParts[1].split(":");
+    final bookingDetails = selectedTimeSlots.map((slot) {
+      final timeSlotParts = slot.split(" - ");
+      final startTimeParts = timeSlotParts[0].split(":");
+      final endTimeParts = timeSlotParts[1].split(":");
 
-    final startTime = DateTime(
-      selectedDate!.year,
-      selectedDate!.month,
-      selectedDate!.day,
-      int.parse(startTimeParts[0]),
-      int.parse(startTimeParts[1]),
-    );
+      final startTime = DateTime(
+        selectedDate!.year,
+        selectedDate!.month,
+        selectedDate!.day,
+        int.parse(startTimeParts[0]),
+        int.parse(startTimeParts[1]),
+      );
 
-    final endTime = DateTime(
-      selectedDate!.year,
-      selectedDate!.month,
-      selectedDate!.day,
-      int.parse(endTimeParts[0]),
-      int.parse(endTimeParts[1]),
-    );
+      final endTime = DateTime(
+        selectedDate!.year,
+        selectedDate!.month,
+        selectedDate!.day,
+        int.parse(endTimeParts[0]),
+        int.parse(endTimeParts[1]),
+      );
+
+      return {
+        "startTime": startTime,
+        "endTime": endTime,
+      };
+    }).toList();
 
     bookingCubit.createBooking(
       arenaId: widget.arena.id,
       fieldId: selectedField!,
-      userId: "dummy_user_id", // Replace with actual user ID
-      startTime: startTime,
-      endTime: endTime,
-      totalPrice: calculatedPrice!,
+      userId: userId!, // Replace with actual user ID
+      bookings: bookingDetails,
+      totalPrice: _calculatePrice(),
     );
+
     Navigator.pop(context);
   }
 }
